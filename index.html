@@ -1,0 +1,20 @@
+---
+layout: default
+title: Home
+---
+
+<div id="banner" style="display: none"></div>
+
+<div>
+  <h1>Welcome to the Home Page</h1>
+  <p>
+    This is the home page of our application. Please
+    <a href="{{ '/login.html' | relative_url }}">log in</a> to access your
+    dashboard.
+  </p>
+</div>
+
+<script
+  type="module"
+  src="{{ '/assets/js/pages/home.js' | relative_url }}"
+></script>
