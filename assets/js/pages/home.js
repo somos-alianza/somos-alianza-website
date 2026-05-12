@@ -5,22 +5,27 @@ const confirmToken = async () => {
   const token = params.get("token");
 
   if (!token) return;
-
-  const response = await fetch(
-    `${apiUrl}/auth/user_logins/confirm?token=${token}`,
-    {
-      method: "GET",
-      credentials: "include"
-    }
-  );
-
   const banner = document.getElementById("banner");
-  banner.style.display = "block";
 
-  if (response.ok) {
-    banner.textContent = "You're signed in!";
-    banner.style.color = "green";
-  } else {
+  try {
+    const response = await fetch(`${apiUrl}/auth/user_logins/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ token })
+    });
+    banner.style.display = "block";
+
+    if (response.ok) {
+      banner.textContent = "You're signed in!";
+      banner.style.color = "green";
+    } else {
+      banner.textContent =
+        "Login link expired or invalid. Please request a new one.";
+      banner.style.color = "red";
+    }
+  } catch (err) {
+    banner.style.display = "block";
     banner.textContent =
       "Login link expired or invalid. Please request a new one.";
     banner.style.color = "red";
