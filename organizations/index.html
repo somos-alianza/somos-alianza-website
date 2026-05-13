@@ -1,0 +1,34 @@
+---
+layout: default
+title: Organizations
+---
+
+<h1>Organizations</h1>
+<a href="{{ '/organizations/new.html' | relative_url }}" class="superuser-only"
+  >New Organization</a
+>
+
+<table id="organizations-table" style="display: none">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="organizations-body"></tbody>
+</table>
+
+<template id="org-row-template">
+  <tr>
+    <td class="org-title"></td>
+    <td>
+      <a class="org-edit superuser-only">Edit</a>
+      <button class="org-delete superuser-only">Delete</button>
+    </td>
+  </tr>
+</template>
+
+<script
+  type="module"
+  src="{{ '/assets/js/pages/organizations/index.js' | relative_url }}"
+></script>

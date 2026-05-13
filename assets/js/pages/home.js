@@ -19,6 +19,8 @@ const confirmToken = async () => {
     banner.style.display = "block";
 
     if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("superuser", data.superuser);
       banner.textContent = "You're signed in!";
       banner.style.color = "green";
     } else {
