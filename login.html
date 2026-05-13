@@ -3,13 +3,29 @@ layout: default
 title: Login
 ---
 
-<div id="login-form-container">
-  <h1>Sign In</h1>
-  <form id="login-form">
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" required />
-    <button type="submit">Send Login Link</button>
-  </form>
+<div id="login-forms-container">
+  <div class="login-form">
+    <h1>Sign In</h1>
+    <form id="user-login-form">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+      <button type="submit">Send Login Link</button>
+    </form>
+  </div>
+
+  <div class="login-form">
+    <h1>Superuser Sign In</h1>
+    <form id="superuser-login-form">
+      <label for="superuser-email">Email</label>
+      <input
+        type="email"
+        id="superuser-email"
+        name="superuser-email"
+        required
+      />
+      <button type="submit">Send Superuser Login Link</button>
+    </form>
+  </div>
 </div>
 
 <p id="message"></p>

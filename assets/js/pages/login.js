@@ -1,16 +1,23 @@
 const apiUrl = document.body.dataset.apiUrl;
 
 const attachLoginListener = () => {
-  document.getElementById("login-form").addEventListener("submit", submitLogin);
+  document.getElementById("user-login-form").addEventListener("submit", (e) => {
+    submitLogin(e, "user_logins", "email");
+  });
+  document
+    .getElementById("superuser-login-form")
+    .addEventListener("submit", (e) => {
+      submitLogin(e, "superuser_logins", "superuser-email");
+    });
 };
 
-const submitLogin = async (e) => {
+const submitLogin = async (e, endpoint, emailId) => {
   e.preventDefault();
 
-  const email = document.getElementById("email").value;
+  const email = document.getElementById(emailId).value;
   const message = document.getElementById("message");
   try {
-    const response = await fetch(`${apiUrl}/auth/user_logins`, {
+    const response = await fetch(`${apiUrl}/auth/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
