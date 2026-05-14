@@ -3,12 +3,14 @@ const apiUrl = document.body.dataset.apiUrl;
 const confirmToken = async () => {
   const params = new URLSearchParams(window.location.search);
   const token = params.get("token");
+  const isSuperuser = params.get("superuser") === "true";
 
   if (!token) return;
   const banner = document.getElementById("banner");
+  const endpoint = isSuperuser ? "superuser_logins" : "user_logins";
 
   try {
-    const response = await fetch(`${apiUrl}/auth/user_logins/confirm`, {
+    const response = await fetch(`${apiUrl}/auth/${endpoint}/confirm`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
