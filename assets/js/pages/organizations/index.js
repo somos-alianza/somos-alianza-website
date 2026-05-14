@@ -7,9 +7,19 @@ const loadOrganizations = async () => {
     credentials: "include"
   });
 
-  if (!response.ok) {
-    window.location.href = `${baseurl}/login.html`;
-    return;
+  switch (response.status) {
+    case 401:
+      window.location.href = `${baseurl}/login.html`;
+      return;
+    case 403:
+      document.getElementById("banner-alert").textContent = "Access denied.";
+      return;
+    default:
+      if (!response.ok) {
+        document.getElementById("banner-alert").textContent =
+          "An error occurred. Please try again later.";
+        return;
+      }
   }
 
   const data = await response.json();
