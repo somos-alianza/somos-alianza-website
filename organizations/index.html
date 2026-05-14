@@ -23,7 +23,14 @@ title: Organizations
     <td class="org-title"></td>
     <td>
       <a class="org-edit superuser-only">Edit</a>
-      <button class="org-delete superuser-only">Delete</button>
+      <button
+        class="org-delete superuser-only"
+        onclick="
+          return confirm('Are you sure you want to delete this organization?');
+        "
+      >
+        Delete
+      </button>
     </td>
   </tr>
 </template>

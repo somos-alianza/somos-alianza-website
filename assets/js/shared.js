@@ -13,4 +13,4 @@ export const redirectIfUnauthorized = () => {
   }
 };
 
-document.addEventListener("DOMContentLoaded", updateSuperuserVisibility);
+// document.addEventListener("DOMContentLoaded", updateSuperuserVisibility);

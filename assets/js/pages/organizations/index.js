@@ -13,10 +13,13 @@ const loadOrganizations = async () => {
 
   const data = await response.json();
   const organizations = data.data;
+  const orgTable = document.getElementById("organizations-table");
   const tbody = document.getElementById("organizations-body");
   const template = document.getElementById("org-row-template");
+  tbody.innerHTML = "";
+
   if (organizations.length > 0) {
-    document.getElementById("organizations-table").style.display = "table";
+    orgTable.style.display = "table";
     organizations.forEach((org) => {
       const row = template.content.cloneNode(true);
       row.querySelector(".org-title").textContent = org.attributes.title;
@@ -26,6 +29,8 @@ const loadOrganizations = async () => {
         .addEventListener("click", () => deleteOrganization(org.id));
       tbody.appendChild(row);
     });
+  } else {
+    orgTable.style.display = "none";
   }
   // updateSuperuserVisibility();
 };
