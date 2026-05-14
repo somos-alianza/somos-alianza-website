@@ -56,7 +56,7 @@ const submitUpdate = async (e) => {
       messageEl.textContent = (data && data.message) || text || "Success.";
     } else {
       messageEl.textContent =
-        (data && data.error) || text || "Something went wrong.";
+        (data && data.errors) || text || "Something went wrong.";
     }
   } catch (error) {
     messageEl.textContent = "There was a network error. Please try again.";
