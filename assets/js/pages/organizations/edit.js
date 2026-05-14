@@ -1,7 +1,7 @@
 import { redirectIfUnauthorized } from "../../shared.js";
-const apiUrl = document.body.dataset.apiUrl;
+redirectIfUnauthorized();
 
-// redirectIfUnauthorized();
+const apiUrl = document.body.dataset.apiUrl;
 const params = new URLSearchParams(window.location.search);
 const orgId = params.get("id");
 const messageEl = document.getElementById("message");

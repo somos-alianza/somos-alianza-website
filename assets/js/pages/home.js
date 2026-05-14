@@ -1,3 +1,4 @@
+import { updateAuthorizedVisibility } from "../shared.js";
 const apiUrl = document.body.dataset.apiUrl;
 
 const confirmToken = async () => {
@@ -20,9 +21,11 @@ const confirmToken = async () => {
 
     if (response.ok) {
       const data = await response.json();
+      localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("superuser", data.superuser);
       banner.textContent = "You're signed in!";
       banner.style.color = "green";
+      updateAuthorizedVisibility();
     } else {
       banner.textContent =
         "Login link expired or invalid. Please request a new one.";

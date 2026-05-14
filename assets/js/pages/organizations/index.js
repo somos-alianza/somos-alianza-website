@@ -1,13 +1,14 @@
 import { updateSuperuserVisibility } from "../../shared.js";
+const baseurl = document.body.dataset.baseurl;
+const apiUrl = document.body.dataset.apiUrl;
 
 const loadOrganizations = async () => {
-  const apiUrl = document.body.dataset.apiUrl;
   const response = await fetch(`${apiUrl}/organizations`, {
     credentials: "include"
   });
 
   if (!response.ok) {
-    window.location.href = "{{ '/login.html' | relative_url }}";
+    window.location.href = `${baseurl}/login.html`;
     return;
   }
 
@@ -16,6 +17,7 @@ const loadOrganizations = async () => {
   const orgTable = document.getElementById("organizations-table");
   const tbody = document.getElementById("organizations-body");
   const template = document.getElementById("org-row-template");
+  // clear out old rows
   tbody.innerHTML = "";
 
   if (organizations.length > 0) {
@@ -32,7 +34,7 @@ const loadOrganizations = async () => {
   } else {
     orgTable.style.display = "none";
   }
-  // updateSuperuserVisibility();
+  updateSuperuserVisibility();
 };
 
 const deleteOrganization = async (id) => {

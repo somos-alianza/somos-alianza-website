@@ -1,8 +1,7 @@
 import { redirectIfUnauthorized } from "../../shared.js";
+redirectIfUnauthorized();
+
 const apiUrl = document.body.dataset.apiUrl;
-
-// redirectIfUnauthorized();
-
 const form = document.getElementById("organization-form");
 const message = document.getElementById("message");
 

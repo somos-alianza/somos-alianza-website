@@ -2,7 +2,11 @@
   <nav>
     <a href="{{ '/' | relative_url }}">Home</a>
     <a href="{{ '/login.html' | relative_url }}">Login</a>
-    <a href="{{ '/organizations/index.html' | relative_url }}">Organizations</a>
+    <a
+      href="{{ '/organizations/index.html' | relative_url }}"
+      class="authorized-only"
+      >Organizations</a
+    >
   </nav>
 </header>
 
