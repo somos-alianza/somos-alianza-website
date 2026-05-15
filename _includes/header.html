@@ -1,0 +1,16 @@
+<header>
+  <nav>
+    <a href="{{ '/' | relative_url }}">Home</a>
+    <a href="{{ '/login.html' | relative_url }}">Login</a>
+    <a
+      href="{{ '/organizations/index.html' | relative_url }}"
+      class="authorized-only"
+      >Organizations</a
+    >
+  </nav>
+</header>
+
+<script
+  type="module"
+  src="{{ '/assets/js/shared.js' | relative_url }}"
+></script>

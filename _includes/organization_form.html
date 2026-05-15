@@ -1,0 +1,19 @@
+<form id="organization-form">
+  <input
+    type="hidden"
+    id="organization-id"
+    name="id"
+    value="{{ include.organization_id }}"
+  />
+  <label for="title">Title</label>
+  <input
+    type="text"
+    id="title"
+    name="title"
+    required
+    value="{{ include.title }}"
+  />
+  <button type="submit">Save Organization</button>
+</form>
+
+<div id="message"></div>
