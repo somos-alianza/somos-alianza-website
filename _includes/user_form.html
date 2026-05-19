@@ -1,0 +1,26 @@
+<form id="user-form">
+  <input type="hidden" id="user-id" name="id" value="{{ include.user_id }}" />
+  <label for="email">Email</label>
+  <input
+    type="text"
+    id="email"
+    name="email"
+    required
+    value="{{ include.email }}"
+  />
+  <label for="admin">Is this user the organization's champion?</label>
+  <input
+    type="checkbox"
+    id="admin"
+    name="admin"
+    {%
+    if
+    include.admin
+    %}checked{%
+    endif
+    %}
+  />
+  <button type="submit">Save User</button>
+</form>
+
+<div id="message"></div>

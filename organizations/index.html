@@ -4,15 +4,15 @@ title: Organizations
 ---
 
 <h1>Organizations</h1>
-<a href="{{ '/organizations/new.html' | relative_url }}" class="superuser-only"
-  >New Organization</a
->
+<a href="{{ '/organizations/new.html' | relative_url }}" class="superuser-only">
+  New Organization
+</a>
 
-<table id="organizations-table" style="display: none">
+<table id="organizations-table" class="superuser-only" style="display: none">
   <thead>
     <tr>
       <th>Title</th>
-      <th class="superuser-only">Actions</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody id="organizations-body"></tbody>
@@ -29,6 +29,7 @@ title: Organizations
       >
         Delete
       </button>
+      <a class="org-users">Manage Members</a>
     </td>
   </tr>
 </template>

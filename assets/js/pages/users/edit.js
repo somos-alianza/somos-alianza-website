@@ -3,43 +3,49 @@ redirectIfUnauthorized();
 
 const apiUrl = document.body.dataset.apiUrl;
 const params = new URLSearchParams(window.location.search);
-const orgId = params.get("id");
+const orgId = params.get("organization_id");
+const userId = params.get("id");
 const messageEl = document.getElementById("message");
-const titleInput = document.getElementById("title");
+const emailInput = document.getElementById("email");
+const adminCheckbox = document.getElementById("admin");
 
-if (orgId) {
-  document.getElementById("organization-id").value = orgId;
+if (orgId && userId) {
+  document.getElementById("user-id").value = userId;
 
-  fetch(`${apiUrl}/organizations/${orgId}`, {
+  fetch(`${apiUrl}/organizations/${orgId}/users/${userId}`, {
     credentials: "include"
   })
     .then((response) => response.json())
     .then((data) => {
-      const org = data.data ? data.data.attributes : null;
-      if (org && org.title) {
-        titleInput.value = org.title;
+      const user = data.data ? data.data.attributes : null;
+      if (user && user.email && user.admin !== undefined) {
+        emailInput.value = user.email;
+        adminCheckbox.checked = user.admin;
       }
     })
     .catch((err) => {
-      messageEl.textContent = `Failed to load user details: ${err}`;
+      messageEl.textContent = `Failed to load organization details: ${err}`;
     });
 }
 
 const attachUpdateListener = () => {
-  document
-    .getElementById("organization-form")
-    .addEventListener("submit", submitUpdate);
+  document.getElementById("user-form").addEventListener("submit", submitUpdate);
 };
 
 const submitUpdate = async (e) => {
   e.preventDefault();
   try {
-    const response = await fetch(`${apiUrl}/organizations/${orgId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ organization: { title: titleInput.value } })
-    });
+    const response = await fetch(
+      `${apiUrl}/organizations/${orgId}/users/${userId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          user: { email: emailInput.value, admin: adminCheckbox.checked }
+        })
+      }
+    );
 
     const contentType = response.headers.get("content-type") || "";
     const isJsonResponse = contentType.includes("application/json");
