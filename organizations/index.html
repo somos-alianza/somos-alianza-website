@@ -3,35 +3,38 @@ layout: default
 title: Organizations
 ---
 
-<h1>Organizations</h1>
-<a href="{{ '/organizations/new.html' | relative_url }}" class="superuser-only"
-  >New Organization</a
->
+<div class="superuser-only">
+  <h1>Organizations</h1>
+  <a href="{{ '/organizations/new.html' | relative_url }}">
+    New Organization
+  </a>
 
-<table id="organizations-table" style="display: none">
-  <thead>
+  <table id="organizations-table" style="display: none">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="organizations-body"></tbody>
+  </table>
+
+  <template id="org-row-template">
     <tr>
-      <th>Title</th>
-      <th class="superuser-only">Actions</th>
+      <td class="org-title"></td>
+      <td>
+        <a class="org-edit">Edit</a>
+        <button
+          class="org-delete"
+          data-confirm="Are you sure you want to delete this organization?"
+        >
+          Delete
+        </button>
+        <a class="org-users">Manage Members</a>
+      </td>
     </tr>
-  </thead>
-  <tbody id="organizations-body"></tbody>
-</table>
-
-<template id="org-row-template">
-  <tr>
-    <td class="org-title"></td>
-    <td class="superuser-only">
-      <a class="org-edit">Edit</a>
-      <button
-        class="org-delete"
-        data-confirm="Are you sure you want to delete this organization?"
-      >
-        Delete
-      </button>
-    </td>
-  </tr>
-</template>
+  </template>
+</div>
 
 <script
   type="module"

@@ -1,4 +1,5 @@
-import { updateSuperuserVisibility } from "../../shared.js";
+import { redirectIfUnauthorized } from "../../shared.js";
+redirectIfUnauthorized();
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
 const bannerEl = document.getElementById("banner-alert");
@@ -41,16 +42,16 @@ const loadOrganizations = async () => {
         if (!confirm(confirmMsg)) return;
         deleteOrganization(org.id);
       });
+      row.querySelector(".org-users").href =
+        `${baseurl}/users/index.html?organization_id=${org.id}`;
       tbody.appendChild(row);
     });
   } else {
     orgTable.style.display = "none";
   }
-  updateSuperuserVisibility();
 };
 
 const deleteOrganization = async (id) => {
-  const apiUrl = document.body.dataset.apiUrl;
   const response = await fetch(`${apiUrl}/organizations/${id}`, {
     method: "DELETE",
     credentials: "include"
