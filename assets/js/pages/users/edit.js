@@ -7,7 +7,7 @@ const orgId = params.get("organization_id");
 const userId = params.get("id");
 const messageEl = document.getElementById("message");
 const emailInput = document.getElementById("email");
-const adminCheckbox = document.getElementById("admin");
+const championCheckbox = document.getElementById("champion");
 
 if (orgId && userId) {
   document.getElementById("user-id").value = userId;
@@ -18,9 +18,9 @@ if (orgId && userId) {
     .then((response) => response.json())
     .then((data) => {
       const user = data.data ? data.data.attributes : null;
-      if (user && user.email && user.admin !== undefined) {
+      if (user && user.email && user.champion !== undefined) {
         emailInput.value = user.email;
-        adminCheckbox.checked = user.admin;
+        championCheckbox.checked = user.champion;
       }
     })
     .catch((err) => {
@@ -42,7 +42,7 @@ const submitUpdate = async (e) => {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          user: { email: emailInput.value, admin: adminCheckbox.checked }
+          user: { email: emailInput.value, champion: championCheckbox.checked }
         })
       }
     );

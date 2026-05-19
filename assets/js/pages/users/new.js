@@ -10,14 +10,14 @@ const orgId = params.get("organization_id");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("email").value;
-  const admin = document.getElementById("admin").checked;
+  const champion = document.getElementById("champion").checked;
 
   try {
     const response = await fetch(`${apiUrl}/organizations/${orgId}/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ user: { email, admin } })
+      body: JSON.stringify({ user: { email, champion } })
     });
 
     const contentType = response.headers.get("content-type") || "";

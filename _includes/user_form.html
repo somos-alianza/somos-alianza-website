@@ -8,14 +8,14 @@
     required
     value="{{ include.email }}"
   />
-  <label for="admin">Is this user the organization's champion?</label>
+  <label for="champion">Is this user the organization's champion?</label>
   <input
     type="checkbox"
-    id="admin"
-    name="admin"
+    id="champion"
+    name="champion"
     {%
     if
-    include.admin
+    include.champion
     %}checked{%
     endif
     %}

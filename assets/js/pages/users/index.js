@@ -54,7 +54,7 @@ const loadUsers = async () => {
     users.forEach((user) => {
       const row = template.content.cloneNode(true);
       row.querySelector(".user-email").textContent = user.attributes.email;
-      row.querySelector(".user-champion").textContent = user.attributes.admin
+      row.querySelector(".user-champion").textContent = user.attributes.champion
         ? "Yes"
         : "No";
       row.querySelector(".user-edit").href =
