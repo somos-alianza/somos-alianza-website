@@ -24,12 +24,16 @@ if (orgId && userId) {
       }
     })
     .catch((err) => {
-      messageEl.textContent = `Failed to load organization details: ${err}`;
+      messageEl.textContent = `Failed to load user details: ${err}`;
     });
 }
 
 const attachUpdateListener = () => {
-  document.getElementById("user-form").addEventListener("submit", submitUpdate);
+  if (orgId && userId) {
+    document
+      .getElementById("user-form")
+      .addEventListener("submit", submitUpdate);
+  }
 };
 
 const submitUpdate = async (e) => {

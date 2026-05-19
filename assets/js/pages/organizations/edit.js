@@ -21,7 +21,7 @@ if (orgId) {
       }
     })
     .catch((err) => {
-      messageEl.textContent = `Failed to load user details: ${err}`;
+      messageEl.textContent = `Failed to load organization details: ${err}`;
     });
 }
 
