@@ -1,5 +1,4 @@
 import { requireSuperuser } from "../../shared.js";
-requireSuperuser();
 
 const apiUrl = document.body.dataset.apiUrl;
 const params = new URLSearchParams(window.location.search);
@@ -7,23 +6,23 @@ const orgId = params.get("id");
 const messageEl = document.getElementById("message");
 const titleInput = document.getElementById("title");
 
-if (orgId) {
-  document.getElementById("organization-id").value = orgId;
+const loadOrganizationDetails = async () => {
+  if (!orgId) return;
 
-  fetch(`${apiUrl}/organizations/${orgId}`, {
-    credentials: "include"
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const org = data.data ? data.data.attributes : null;
-      if (org && org.title) {
-        titleInput.value = org.title;
-      }
-    })
-    .catch((err) => {
-      messageEl.textContent = `Failed to load organization details: ${err}`;
+  try {
+    const response = await fetch(`${apiUrl}/organizations/${orgId}`, {
+      credentials: "include"
     });
-}
+    const data = await response.json();
+    const org = data.data ? data.data.attributes : null;
+
+    if (org && org.title) {
+      titleInput.value = org.title;
+    }
+  } catch (err) {
+    messageEl.textContent = `Failed to load organization details: ${err}`;
+  }
+};
 
 const attachUpdateListener = () => {
   document
@@ -63,4 +62,18 @@ const submitUpdate = async (e) => {
   }
 };
 
-attachUpdateListener();
+const init = async () => {
+  const currentUser = await requireSuperuser();
+  if (!currentUser) return;
+
+  if (!orgId) {
+    messageEl.textContent = "Missing organization context.";
+    return;
+  }
+
+  document.getElementById("organization-id").value = orgId;
+  await loadOrganizationDetails();
+  attachUpdateListener();
+};
+
+init();

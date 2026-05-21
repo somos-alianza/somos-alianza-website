@@ -1,5 +1,4 @@
 import { requireSuperuser } from "../../shared.js";
-requireSuperuser();
 
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
@@ -66,4 +65,11 @@ const deleteOrganization = async (id) => {
   }
 };
 
-loadOrganizations();
+const init = async () => {
+  const currentUser = await requireSuperuser();
+  if (!currentUser) return;
+
+  loadOrganizations();
+};
+
+init();

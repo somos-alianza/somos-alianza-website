@@ -54,7 +54,7 @@ const init = async () => {
 
   canManageChampionStatus = currentUser.role === "superuser";
   if (!canManageChampionStatus && championInput) {
-    championInput.checked = false;
+    championInput.disabled = true;
   }
 
   if (!orgId) {

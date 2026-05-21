@@ -1,5 +1,4 @@
 import { requireChampion } from "../../shared.js";
-requireChampion();
 
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
@@ -10,14 +9,19 @@ const orgId = params.get("organization_id");
 
 const addUserButton = document.getElementById("add-user-button");
 
-if (!orgId) {
-  bannerEl.textContent = "Missing organization context.";
-  if (addUserButton) addUserButton.hidden = true;
-} else if (addUserButton) {
-  const url = new URL(addUserButton.href, window.location.origin);
-  url.searchParams.set("organization_id", orgId);
-  addUserButton.href = `${url.pathname}${url.search}`;
-}
+const setupAddUserButton = () => {
+  if (!orgId) {
+    bannerEl.textContent = "Missing organization context.";
+    if (addUserButton) addUserButton.hidden = true;
+    return;
+  }
+
+  if (addUserButton) {
+    const url = new URL(addUserButton.href, window.location.origin);
+    url.searchParams.set("organization_id", orgId);
+    addUserButton.href = `${url.pathname}${url.search}`;
+  }
+};
 
 const loadUsers = async () => {
   if (!orgId) return;
@@ -85,4 +89,12 @@ const deleteUser = async (id) => {
   }
 };
 
-loadUsers();
+const init = async () => {
+  const currentUser = await requireChampion();
+  if (!currentUser) return;
+
+  setupAddUserButton();
+  loadUsers();
+};
+
+init();
