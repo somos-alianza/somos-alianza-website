@@ -1,5 +1,5 @@
-import { redirectIfUnauthorized } from "../../shared.js";
-redirectIfUnauthorized();
+import { requireSuperuser } from "../../shared.js";
+requireSuperuser();
 
 const apiUrl = document.body.dataset.apiUrl;
 const params = new URLSearchParams(window.location.search);

@@ -1,4 +1,8 @@
-import { updateVisibility } from "../shared.js";
+import {
+  clearCachedAuth,
+  getAuthContext,
+  updateVisibility
+} from "../shared.js";
 const apiUrl = document.body.dataset.apiUrl;
 
 const confirmToken = async () => {
@@ -17,17 +21,16 @@ const confirmToken = async () => {
       credentials: "include",
       body: JSON.stringify({ token })
     });
+
     banner.style.display = "block";
 
     if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("superuser", data.superuser);
-      localStorage.setItem("champion", data.champion);
-      localStorage.setItem("organization", data.organization);
       banner.textContent = "You're signed in!";
       banner.style.color = "green";
-      updateVisibility();
+
+      clearCachedAuth();
+      await getAuthContext({ forceRefresh: true });
+      await updateVisibility();
     } else {
       banner.textContent =
         "Login link expired or invalid. Please request a new one.";

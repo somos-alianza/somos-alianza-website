@@ -1,0 +1,5 @@
+.authorized-only,
+.champion-only,
+.superuser-only {
+  display: none;
+}

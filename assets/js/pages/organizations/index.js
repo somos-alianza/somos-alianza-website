@@ -1,5 +1,6 @@
-import { redirectIfUnauthorized } from "../../shared.js";
-redirectIfUnauthorized();
+import { requireSuperuser } from "../../shared.js";
+requireSuperuser();
+
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
 const bannerEl = document.getElementById("banner-alert");
