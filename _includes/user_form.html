@@ -1,4 +1,4 @@
-<form id="user-form">
+<form id="user-form" class="champion-only">
   <input type="hidden" id="user-id" name="id" value="{{ include.user_id }}" />
   <label for="email">Email</label>
   <input
@@ -8,18 +8,20 @@
     required
     value="{{ include.email }}"
   />
-  <label for="champion">Is this user the organization's champion?</label>
-  <input
-    type="checkbox"
-    id="champion"
-    name="champion"
-    {%
-    if
-    include.champion
-    %}checked{%
-    endif
-    %}
-  />
+  <div class="superuser-only">
+    <label for="champion">Is this user the organization's champion?</label>
+    <input
+      type="checkbox"
+      id="champion"
+      name="champion"
+      {%
+      if
+      include.champion
+      %}checked{%
+      endif
+      %}
+    />
+  </div>
   <button type="submit">Save User</button>
 </form>
 

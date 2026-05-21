@@ -1,5 +1,5 @@
-import { redirectIfUnauthorized } from "../../shared.js";
-redirectIfUnauthorized();
+import { requireChampion } from "../../shared.js";
+requireChampion();
 
 const apiUrl = document.body.dataset.apiUrl;
 const form = document.getElementById("user-form");

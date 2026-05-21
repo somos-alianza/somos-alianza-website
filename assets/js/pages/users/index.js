@@ -1,5 +1,5 @@
-import { redirectIfUnauthorized } from "../../shared.js";
-redirectIfUnauthorized();
+import { requireChampion } from "../../shared.js";
+requireChampion();
 
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
