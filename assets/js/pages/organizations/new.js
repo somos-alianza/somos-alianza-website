@@ -1,11 +1,10 @@
-import { redirectIfUnauthorized } from "../../shared.js";
-redirectIfUnauthorized();
+import { requireSuperuser } from "../../shared.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 const form = document.getElementById("organization-form");
 const message = document.getElementById("message");
 
-form.addEventListener("submit", async (e) => {
+const submitCreate = async (e) => {
   e.preventDefault();
   const title = document.getElementById("title").value;
 
@@ -38,4 +37,13 @@ form.addEventListener("submit", async (e) => {
   } catch (error) {
     message.textContent = "There was a network error. Please try again.";
   }
-});
+};
+
+const init = async () => {
+  const currentUser = await requireSuperuser();
+  if (!currentUser) return;
+
+  form.addEventListener("submit", submitCreate);
+};
+
+init();

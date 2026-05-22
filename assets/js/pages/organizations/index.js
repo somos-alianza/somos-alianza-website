@@ -1,5 +1,5 @@
-import { redirectIfUnauthorized } from "../../shared.js";
-redirectIfUnauthorized();
+import { requireSuperuser } from "../../shared.js";
+
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
 const bannerEl = document.getElementById("banner-alert");
@@ -65,4 +65,11 @@ const deleteOrganization = async (id) => {
   }
 };
 
-loadOrganizations();
+const init = async () => {
+  const currentUser = await requireSuperuser();
+  if (!currentUser) return;
+
+  loadOrganizations();
+};
+
+init();

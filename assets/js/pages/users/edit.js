@@ -1,5 +1,4 @@
-import { redirectIfUnauthorized } from "../../shared.js";
-redirectIfUnauthorized();
+import { requireChampion } from "../../shared.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 const params = new URLSearchParams(window.location.search);
@@ -8,25 +7,31 @@ const userId = params.get("id");
 const messageEl = document.getElementById("message");
 const emailInput = document.getElementById("email");
 const championCheckbox = document.getElementById("champion");
+let canManageChampionStatus = false;
 
-if (orgId && userId) {
-  document.getElementById("user-id").value = userId;
+const loadUserDetails = async () => {
+  if (!orgId || !userId) return;
 
-  fetch(`${apiUrl}/organizations/${orgId}/users/${userId}`, {
-    credentials: "include"
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const user = data.data ? data.data.attributes : null;
-      if (user && user.email && user.champion !== undefined) {
-        emailInput.value = user.email;
+  try {
+    const response = await fetch(
+      `${apiUrl}/organizations/${orgId}/users/${userId}`,
+      {
+        credentials: "include"
+      }
+    );
+    const data = await response.json();
+    const user = data.data ? data.data.attributes : null;
+
+    if (user && user.email) {
+      emailInput.value = user.email;
+      if (canManageChampionStatus && user.champion !== undefined) {
         championCheckbox.checked = user.champion;
       }
-    })
-    .catch((err) => {
-      messageEl.textContent = `Failed to load user details: ${err}`;
-    });
-}
+    }
+  } catch (err) {
+    messageEl.textContent = `Failed to load user details: ${err}`;
+  }
+};
 
 const attachUpdateListener = () => {
   if (orgId && userId) {
@@ -38,6 +43,9 @@ const attachUpdateListener = () => {
 
 const submitUpdate = async (e) => {
   e.preventDefault();
+  const userPayload = { email: emailInput.value };
+  if (canManageChampionStatus) userPayload.champion = championCheckbox.checked;
+
   try {
     const response = await fetch(
       `${apiUrl}/organizations/${orgId}/users/${userId}`,
@@ -46,7 +54,7 @@ const submitUpdate = async (e) => {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          user: { email: emailInput.value, champion: championCheckbox.checked }
+          user: userPayload
         })
       }
     );
@@ -73,4 +81,23 @@ const submitUpdate = async (e) => {
   }
 };
 
-attachUpdateListener();
+const init = async () => {
+  const currentUser = await requireChampion();
+  if (!currentUser) return;
+
+  canManageChampionStatus = currentUser.role === "superuser";
+  if (!canManageChampionStatus && championCheckbox) {
+    championCheckbox.disabled = true;
+  }
+
+  if (!orgId || !userId) {
+    messageEl.textContent = "Missing user or organization context.";
+    return;
+  }
+
+  document.getElementById("user-id").value = userId;
+  await loadUserDetails();
+  attachUpdateListener();
+};
+
+init();
