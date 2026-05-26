@@ -1,6 +1,8 @@
 import { requireChampion } from "../../shared.js";
+import { apiFetch, getErrorMessage } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
+const baseurl = document.body.dataset.baseurl;
 const form = document.getElementById("user-form");
 const message = document.getElementById("message");
 const params = new URLSearchParams(window.location.search);
@@ -19,29 +21,21 @@ const submitCreate = async (e) => {
   }
 
   try {
-    const response = await fetch(`${apiUrl}/organizations/${orgId}/users`, {
+    const res = await apiFetch(`${apiUrl}/organizations/${orgId}/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ user: userPayload })
     });
 
-    const contentType = response.headers.get("content-type") || "";
-    const isJsonResponse = contentType.includes("application/json");
-    let data = null;
-    let text = "";
-
-    if (isJsonResponse) {
-      data = await response.json();
-    } else {
-      text = await response.text();
+    if (res.unauthorized) {
+      window.location.href = `${baseurl}/login.html`;
+      return;
     }
 
-    if (response.ok) {
-      message.textContent = (data && data.message) || text || "User created!";
+    if (res.ok) {
+      message.textContent = res.message || "User created!";
     } else {
-      message.textContent =
-        (data && data.errors) || text || "Something went wrong.";
+      message.textContent = getErrorMessage(res, "Something went wrong.");
     }
   } catch (error) {
     message.textContent = "There was a network error. Please try again.";

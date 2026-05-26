@@ -1,13 +1,12 @@
 <header>
   <nav>
     <a href="{{ '/' | relative_url }}">Home</a>
-    <a href="{{ '/login.html' | relative_url }}">Login</a>
     <a
       href="{{ '/organizations/index.html' | relative_url }}"
       class="superuser-only"
       >Organizations</a
     >
-    <a id="users-link" class="champion-only" aria-label="Manage users">
+    <a id="users-link" aria-label="Manage users" class="not-superuser">
       <i class="fa-regular fa-user"></i>
     </a>
   </nav>

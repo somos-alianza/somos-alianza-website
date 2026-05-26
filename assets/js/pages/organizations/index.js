@@ -1,30 +1,32 @@
 import { requireSuperuser } from "../../shared.js";
+import { apiFetch, getErrorMessage } from "../../api_helpers.js";
 
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
 const bannerEl = document.getElementById("banner-alert");
 
 const loadOrganizations = async () => {
-  const response = await fetch(`${apiUrl}/organizations`, {
-    credentials: "include"
-  });
+  const res = await apiFetch(`${apiUrl}/organizations`);
 
-  switch (response.status) {
-    case 401:
-      window.location.href = `${baseurl}/login.html`;
-      return;
-    case 403:
-      bannerEl.textContent = "Access denied.";
-      return;
-    default:
-      if (!response.ok) {
-        bannerEl.textContent = "An error occurred. Please try again later.";
-        return;
-      }
+  if (res.unauthorized) {
+    window.location.href = `${baseurl}/login.html`;
+    return;
   }
 
-  const data = await response.json();
-  const organizations = data.data;
+  if (res.forbidden) {
+    bannerEl.textContent = "Access denied.";
+    return;
+  }
+
+  if (!res.ok) {
+    bannerEl.textContent = getErrorMessage(
+      res,
+      "An error occurred. Please try again later."
+    );
+    return;
+  }
+
+  const organizations = res.items;
   const orgTable = document.getElementById("organizations-table");
   const tbody = document.getElementById("organizations-body");
   const template = document.getElementById("org-row-template");
@@ -35,7 +37,7 @@ const loadOrganizations = async () => {
     orgTable.style.display = "table";
     organizations.forEach((org) => {
       const row = template.content.cloneNode(true);
-      row.querySelector(".org-title").textContent = org.attributes.title;
+      row.querySelector(".org-title").textContent = org.title;
       row.querySelector(".org-edit").href = `edit.html?id=${org.id}`;
       row.querySelector(".org-delete").addEventListener("click", (e) => {
         const confirmMsg = e.target.dataset.confirm;
@@ -52,24 +54,31 @@ const loadOrganizations = async () => {
 };
 
 const deleteOrganization = async (id) => {
-  const response = await fetch(`${apiUrl}/organizations/${id}`, {
-    method: "DELETE",
-    credentials: "include"
+  const res = await apiFetch(`${apiUrl}/organizations/${id}`, {
+    method: "DELETE"
   });
 
-  if (response.ok) {
-    loadOrganizations();
-  } else {
-    let message = await response.json();
-    bannerEl.textContent = message.error;
+  if (res.unauthorized) {
+    window.location.href = `${baseurl}/login.html`;
+    return;
   }
+
+  if (!res.ok) {
+    bannerEl.textContent = getErrorMessage(
+      res,
+      "Failed to delete organization."
+    );
+    return;
+  }
+
+  await loadOrganizations();
 };
 
 const init = async () => {
   const currentUser = await requireSuperuser();
   if (!currentUser) return;
 
-  loadOrganizations();
+  await loadOrganizations();
 };
 
 init();

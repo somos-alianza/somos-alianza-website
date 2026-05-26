@@ -1,3 +1,5 @@
+import { apiFetch } from "./api_helpers.js";
+
 const { baseurl, apiUrl } = document.body.dataset;
 
 const AUTH_CACHE_KEY = "auth_context_v1";
@@ -50,18 +52,15 @@ export const clearCachedAuth = () => {
 };
 
 const fetchAuthSession = async () => {
-  const response = await fetch(`${apiUrl}/auth/session`, {
-    credentials: "include"
-  });
+  const response = await apiFetch(`${apiUrl}/auth/session`);
 
   if (!response.ok) {
     clearCachedAuth();
     return null;
   }
 
-  const data = await response.json();
-  writeCachedAuth(data);
-  return data;
+  writeCachedAuth(response.body);
+  return response.body;
 };
 
 export const getAuthContext = async ({ forceRefresh = false } = {}) => {
@@ -113,14 +112,15 @@ export const updateVisibility = async () => {
 const updateUsersLink = (currentUser) => {
   const usersLink = document.getElementById("users-link");
   if (!usersLink) return;
-
-  const organizationId = currentUser?.organization_id;
-  if (!organizationId) {
+  if (!currentUser?.authenticated) {
+    usersLink.href = `${baseurl}/login.html`;
+    return;
+  } else if (currentUser?.role === "superuser") {
     usersLink.style.display = "none";
-    usersLink.removeAttribute("href");
     return;
   }
 
+  const organizationId = currentUser?.organization_id;
   usersLink.href = `${baseurl}/users/index.html?organization_id=${organizationId}`;
 };
 

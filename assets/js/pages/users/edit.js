@@ -1,6 +1,8 @@
 import { requireChampion } from "../../shared.js";
+import { apiFetch, getErrorMessage } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
+const baseurl = document.body.dataset.baseurl;
 const params = new URLSearchParams(window.location.search);
 const orgId = params.get("organization_id");
 const userId = params.get("id");
@@ -12,24 +14,29 @@ let canManageChampionStatus = false;
 const loadUserDetails = async () => {
   if (!orgId || !userId) return;
 
-  try {
-    const response = await fetch(
-      `${apiUrl}/organizations/${orgId}/users/${userId}`,
-      {
-        credentials: "include"
-      }
-    );
-    const data = await response.json();
-    const user = data.data ? data.data.attributes : null;
+  const res = await apiFetch(
+    `${apiUrl}/organizations/${orgId}/users/${userId}`
+  );
 
-    if (user && user.email) {
-      emailInput.value = user.email;
-      if (canManageChampionStatus && user.champion !== undefined) {
-        championCheckbox.checked = user.champion;
-      }
+  if (res.unauthorized) {
+    window.location.href = `${baseurl}/login.html`;
+    return;
+  }
+
+  if (!res.ok) {
+    messageEl.textContent = getErrorMessage(
+      res,
+      "Failed to load user details."
+    );
+    return;
+  }
+
+  const user = res.item;
+  if (user?.email) {
+    emailInput.value = user.email;
+    if (canManageChampionStatus && user.champion !== undefined) {
+      championCheckbox.checked = user.champion;
     }
-  } catch (err) {
-    messageEl.textContent = `Failed to load user details: ${err}`;
   }
 };
 
@@ -47,34 +54,24 @@ const submitUpdate = async (e) => {
   if (canManageChampionStatus) userPayload.champion = championCheckbox.checked;
 
   try {
-    const response = await fetch(
+    const res = await apiFetch(
       `${apiUrl}/organizations/${orgId}/users/${userId}`,
       {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          user: userPayload
-        })
+        body: JSON.stringify({ user: userPayload })
       }
     );
 
-    const contentType = response.headers.get("content-type") || "";
-    const isJsonResponse = contentType.includes("application/json");
-    let data = null;
-    let text = "";
-
-    if (isJsonResponse) {
-      data = await response.json();
-    } else {
-      text = await response.text();
+    if (res.unauthorized) {
+      window.location.href = `${baseurl}/login.html`;
+      return;
     }
 
-    if (response.ok) {
-      messageEl.textContent = (data && data.message) || text || "Success.";
+    if (res.ok) {
+      messageEl.textContent = res.message || "Success.";
     } else {
-      messageEl.textContent =
-        (data && data.errors) || text || "Something went wrong.";
+      messageEl.textContent = getErrorMessage(res, "Something went wrong.");
     }
   } catch (error) {
     messageEl.textContent = "There was a network error. Please try again.";

@@ -1,3 +1,5 @@
+import { apiFetch, getErrorMessage } from "../api_helpers.js";
+
 const apiUrl = document.body.dataset.apiUrl;
 
 document.getElementById("user-login-form").addEventListener("submit", (e) => {
@@ -16,20 +18,15 @@ async function submitLogin(e, endpoint) {
   const message = document.getElementById("message");
 
   try {
-    const response = await fetch(`${apiUrl}/auth/${endpoint}`, {
+    const res = await apiFetch(`${apiUrl}/auth/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ email })
     });
 
-    const contentType = response.headers.get("content-type") || "";
-    const isJson = contentType.includes("application/json");
-    const data = isJson ? await response.json() : await response.text();
-
-    message.textContent = response.ok
-      ? (isJson ? data.message : data) || "Success."
-      : (isJson ? data.error : data) || "Something went wrong.";
+    message.textContent = res.ok
+      ? res.message || "Success."
+      : getErrorMessage(res, "Something went wrong.");
   } catch {
     message.textContent = "There was a network error. Please try again.";
   }

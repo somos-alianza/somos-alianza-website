@@ -1,4 +1,5 @@
 import { requireChampion } from "../../shared.js";
+import { apiFetch, getErrorMessage } from "../../api_helpers.js";
 
 const baseurl = document.body.dataset.baseurl;
 const apiUrl = document.body.dataset.apiUrl;
@@ -26,27 +27,28 @@ const setupAddUserButton = () => {
 const loadUsers = async () => {
   if (!orgId) return;
 
-  const response = await fetch(`${apiUrl}/organizations/${orgId}/users`, {
-    credentials: "include"
-  });
+  const res = await apiFetch(`${apiUrl}/organizations/${orgId}/users`);
 
-  switch (response.status) {
-    case 401:
-      window.location.href = `${baseurl}/login.html`;
-      return;
-    case 403:
-      bannerEl.textContent = "Access denied.";
-      return;
-    default:
-      if (!response.ok) {
-        bannerEl.textContent = "An error occurred. Please try again later.";
-        return;
-      }
+  if (res.unauthorized) {
+    window.location.href = `${baseurl}/login.html`;
+    return;
   }
 
-  const data = await response.json();
-  orgTitle.textContent = data.organization.attributes.title;
-  const users = data.data;
+  if (res.forbidden) {
+    bannerEl.textContent = "Access denied.";
+    return;
+  }
+
+  if (!res.ok) {
+    bannerEl.textContent = getErrorMessage(
+      res,
+      "An error occurred. Please try again later."
+    );
+    return;
+  }
+
+  orgTitle.textContent = res.body?.organization?.title || "";
+  const users = res.items;
   const userTable = document.getElementById("users-table");
   const tbody = document.getElementById("users-body");
   const template = document.getElementById("user-row-template");
@@ -57,8 +59,8 @@ const loadUsers = async () => {
     userTable.style.display = "table";
     users.forEach((user) => {
       const row = template.content.cloneNode(true);
-      row.querySelector(".user-email").textContent = user.attributes.email;
-      row.querySelector(".user-champion").textContent = user.attributes.champion
+      row.querySelector(".user-email").textContent = user.email;
+      row.querySelector(".user-champion").textContent = user.champion
         ? "Yes"
         : "No";
       row.querySelector(".user-edit").href =
@@ -76,17 +78,21 @@ const loadUsers = async () => {
 };
 
 const deleteUser = async (id) => {
-  const response = await fetch(`${apiUrl}/organizations/${orgId}/users/${id}`, {
-    method: "DELETE",
-    credentials: "include"
+  const res = await apiFetch(`${apiUrl}/organizations/${orgId}/users/${id}`, {
+    method: "DELETE"
   });
 
-  if (response.ok) {
-    loadUsers();
-  } else {
-    let message = await response.json();
-    bannerEl.textContent = message.error;
+  if (res.unauthorized) {
+    window.location.href = `${baseurl}/login.html`;
+    return;
   }
+
+  if (!res.ok) {
+    bannerEl.textContent = getErrorMessage(res, "Failed to delete user.");
+    return;
+  }
+
+  await loadUsers();
 };
 
 const init = async () => {
@@ -94,7 +100,7 @@ const init = async () => {
   if (!currentUser) return;
 
   setupAddUserButton();
-  loadUsers();
+  await loadUsers();
 };
 
 init();

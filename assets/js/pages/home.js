@@ -3,6 +3,7 @@ import {
   getAuthContext,
   updateVisibility
 } from "../shared.js";
+import { apiFetch, getErrorMessage } from "../api_helpers.js";
 const apiUrl = document.body.dataset.apiUrl;
 
 const confirmToken = async () => {
@@ -15,25 +16,26 @@ const confirmToken = async () => {
   const endpoint = isSuperuser ? "superuser_logins" : "user_logins";
 
   try {
-    const response = await fetch(`${apiUrl}/auth/${endpoint}/confirm`, {
+    const res = await apiFetch(`${apiUrl}/auth/${endpoint}/confirm`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ token })
     });
 
     banner.style.display = "block";
 
-    if (response.ok) {
-      banner.textContent = "You're signed in!";
+    if (res.ok) {
+      banner.textContent = res.message || "You're signed in!";
       banner.style.color = "green";
 
       clearCachedAuth();
       await getAuthContext({ forceRefresh: true });
       await updateVisibility();
     } else {
-      banner.textContent =
-        "Login link expired or invalid. Please request a new one.";
+      banner.textContent = getErrorMessage(
+        res,
+        "Login link expired or invalid. Please request a new one."
+      );
       banner.style.color = "red";
     }
   } catch (err) {
