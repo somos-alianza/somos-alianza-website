@@ -6,7 +6,12 @@
       class="superuser-only"
       >Organizations</a
     >
-    <a id="users-link" aria-label="Manage users">
+    <a
+      id="users-link"
+      aria-label="Manage users"
+      href="{{ '/login.html' | relative_url }}"
+      style="display: none"
+    >
       <i class="fa-regular fa-user"></i>
     </a>
   </nav>

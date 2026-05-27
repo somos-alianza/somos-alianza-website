@@ -1,5 +1,5 @@
-import { requireSuperuser } from "../../shared.js";
-import { apiFetch, getErrorMessage } from "../../api_helpers.js";
+import { requireSuperuser, showBannerAlert } from "../../shared.js";
+import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 const form = document.getElementById("organization-form");
@@ -22,15 +22,21 @@ const submitCreate = async (e) => {
       })
     });
 
-    if (!res.ok) {
-      messageEl.textContent = getErrorMessage(res, "Something went wrong.");
+    const shouldContinue = handleApiResult(res, {
+      baseurl: document.body.dataset.baseurl,
+      fallback: "Something went wrong.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
       return;
     }
 
     messageEl.textContent = res.message || "Organization created!";
     form.reset();
   } catch (_error) {
-    messageEl.textContent = "There was a network error. Please try again.";
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 

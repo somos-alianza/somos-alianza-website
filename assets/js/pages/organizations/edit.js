@@ -1,5 +1,5 @@
-import { requireSuperuser } from "../../shared.js";
-import { apiFetch, getErrorMessage } from "../../api_helpers.js";
+import { requireSuperuser, showBannerAlert } from "../../shared.js";
+import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 const baseurl = document.body.dataset.baseurl;
@@ -12,23 +12,25 @@ const titleInput = document.getElementById("title");
 const loadOrganizationDetails = async () => {
   if (!orgId) return;
 
-  const res = await apiFetch(`${apiUrl}/organizations/${orgId}`);
+  try {
+    const res = await apiFetch(`${apiUrl}/organizations/${orgId}`);
 
-  if (res.unauthorized) {
-    window.location.href = `${baseurl}/login.html`;
-    return;
-  }
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Failed to load organization details.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
+      return;
+    }
 
-  if (!res.ok) {
-    messageEl.textContent = getErrorMessage(
-      res,
-      "Failed to load organization details."
-    );
-    return;
-  }
-
-  if (res.item?.title) {
-    titleInput.value = res.item.title;
+    if (res.item?.title) {
+      titleInput.value = res.item.title;
+    }
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 
@@ -46,19 +48,20 @@ const submitUpdate = async (e) => {
       body: JSON.stringify({ organization: { title: titleInput.value } })
     });
 
-    if (res.unauthorized) {
-      window.location.href = `${baseurl}/login.html`;
-      return;
-    }
-
-    if (!res.ok) {
-      messageEl.textContent = getErrorMessage(res, "Something went wrong.");
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Something went wrong.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
       return;
     }
 
     messageEl.textContent = res.message || "Updated Organization.";
   } catch (_error) {
-    messageEl.textContent = "There was a network error. Please try again.";
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 

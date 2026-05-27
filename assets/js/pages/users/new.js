@@ -1,5 +1,5 @@
-import { requireChampion } from "../../shared.js";
-import { apiFetch, getErrorMessage } from "../../api_helpers.js";
+import { requireChampion, showBannerAlert } from "../../shared.js";
+import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 const baseurl = document.body.dataset.baseurl;
@@ -27,36 +27,44 @@ const submitCreate = async (e) => {
       body: JSON.stringify({ user: userPayload })
     });
 
-    if (res.unauthorized) {
-      window.location.href = `${baseurl}/login.html`;
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Something went wrong.",
+      onError: (text) => {
+        message.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
       return;
     }
 
     if (res.ok) {
       message.textContent = res.message || "User created!";
-    } else {
-      message.textContent = getErrorMessage(res, "Something went wrong.");
     }
-  } catch (error) {
-    message.textContent = "There was a network error. Please try again.";
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 
 const init = async () => {
-  const currentUser = await requireChampion();
-  if (!currentUser) return;
+  try {
+    const currentUser = await requireChampion();
+    if (!currentUser) return;
 
-  canManageChampionStatus = currentUser.role === "superuser";
-  if (!canManageChampionStatus && championInput) {
-    championInput.disabled = true;
+    canManageChampionStatus = currentUser.role === "superuser";
+    if (!canManageChampionStatus && championInput) {
+      championInput.disabled = true;
+    }
+
+    if (!orgId) {
+      message.textContent = "Missing organization context.";
+      return;
+    }
+
+    form.addEventListener("submit", submitCreate);
+  } catch (_error) {
+    showBannerAlert("An error occurred. Please try again later.");
   }
-
-  if (!orgId) {
-    message.textContent = "Missing organization context.";
-    return;
-  }
-
-  form.addEventListener("submit", submitCreate);
 };
 
 init();

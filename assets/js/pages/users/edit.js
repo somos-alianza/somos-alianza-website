@@ -1,5 +1,5 @@
-import { requireChampion } from "../../shared.js";
-import { apiFetch, getErrorMessage } from "../../api_helpers.js";
+import { requireChampion, showBannerAlert } from "../../shared.js";
+import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 const baseurl = document.body.dataset.baseurl;
@@ -14,29 +14,31 @@ let canManageChampionStatus = false;
 const loadUserDetails = async () => {
   if (!orgId || !userId) return;
 
-  const res = await apiFetch(
-    `${apiUrl}/organizations/${orgId}/users/${userId}`
-  );
-
-  if (res.unauthorized) {
-    window.location.href = `${baseurl}/login.html`;
-    return;
-  }
-
-  if (!res.ok) {
-    messageEl.textContent = getErrorMessage(
-      res,
-      "Failed to load user details."
+  try {
+    const res = await apiFetch(
+      `${apiUrl}/organizations/${orgId}/users/${userId}`
     );
-    return;
-  }
 
-  const user = res.item;
-  if (user?.email) {
-    emailInput.value = user.email;
-    if (canManageChampionStatus && user.champion !== undefined) {
-      championCheckbox.checked = user.champion;
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Failed to load user details.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
+      return;
     }
+
+    const user = res.item;
+    if (user?.email) {
+      emailInput.value = user.email;
+      if (canManageChampionStatus && user.champion !== undefined) {
+        championCheckbox.checked = user.champion;
+      }
+    }
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 
@@ -63,18 +65,22 @@ const submitUpdate = async (e) => {
       }
     );
 
-    if (res.unauthorized) {
-      window.location.href = `${baseurl}/login.html`;
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Something went wrong.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
       return;
     }
 
     if (res.ok) {
       messageEl.textContent = res.message || "Success.";
-    } else {
-      messageEl.textContent = getErrorMessage(res, "Something went wrong.");
     }
-  } catch (error) {
-    messageEl.textContent = "There was a network error. Please try again.";
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 

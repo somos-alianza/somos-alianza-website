@@ -52,21 +52,26 @@ export const clearCachedAuth = () => {
 };
 
 const fetchAuthSession = async () => {
-  const response = await apiFetch(`${apiUrl}/auth/session`);
-
-  if (!response.ok) {
+  let res;
+  try {
+    res = await apiFetch(`${apiUrl}/auth/session`);
+  } catch (_error) {
     clearCachedAuth();
     return null;
   }
 
-  writeCachedAuth(response.body);
-  return response.body;
+  if (!res.ok) {
+    clearCachedAuth();
+    return null;
+  }
+
+  writeCachedAuth(res.body);
+  return res.body;
 };
 
 export const getAuthContext = async ({ forceRefresh = false } = {}) => {
   if (!forceRefresh) {
-    const cached = readCachedAuth();
-    if (cached) return cached;
+    return readCachedAuth();
   }
 
   if (!inFlightAuthPromise) {
@@ -91,6 +96,15 @@ export const requireAuthenticated = async () => requireRole("user");
 export const requireChampion = async () => requireRole("champion");
 export const requireSuperuser = async () => requireRole("superuser");
 
+export const showBannerAlert = (text) => {
+  const bannerEl = document.getElementById("banner-alert");
+  if (!bannerEl) return;
+
+  bannerEl.style.display = "block";
+  bannerEl.style.color = "red";
+  bannerEl.textContent = text;
+};
+
 export const updateVisibility = async () => {
   const currentUser = await getAuthContext();
   const authenticated = Boolean(currentUser?.authenticated);
@@ -112,16 +126,26 @@ export const updateVisibility = async () => {
 const updateUsersLink = (currentUser) => {
   const usersLink = document.getElementById("users-link");
   if (!usersLink) return;
+
   if (!currentUser?.authenticated) {
+    usersLink.style.display = "";
     usersLink.href = `${baseurl}/login.html`;
-    return;
-  } else if (currentUser?.role === "superuser") {
-    usersLink.style.display = "none";
     return;
   }
 
-  const organizationId = currentUser?.organization_id;
-  usersLink.href = `${baseurl}/users/index.html?organization_id=${organizationId}`;
+  if (currentUser.role === "champion") {
+    usersLink.style.display = "";
+    const organizationId = encodeURIComponent(
+      currentUser.organization_id || ""
+    );
+    usersLink.href = `${baseurl}/users/index.html?organization_id=${organizationId}`;
+    return;
+  }
+
+  if (currentUser.role === "superuser" || currentUser.role === "user") {
+    usersLink.style.display = "none";
+    usersLink.removeAttribute("href");
+  }
 };
 
 document.addEventListener("DOMContentLoaded", () => {

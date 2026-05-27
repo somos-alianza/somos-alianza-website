@@ -34,12 +34,17 @@ export const parseApiResponse = async (response) => {
 };
 
 export const apiFetch = async (url, options = {}) => {
-  const response = await fetch(url, {
-    credentials: "include",
-    ...options
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      credentials: "include",
+      ...options
+    });
+  } catch (error) {
+    throw error;
+  }
 
-  return parseApiResponse(response);
+  return parseApiResponse(res);
 };
 
 export const getErrorMessage = (result, fallback = "Something went wrong.") => {
@@ -47,16 +52,35 @@ export const getErrorMessage = (result, fallback = "Something went wrong.") => {
   return result.errors.join(", ") || result.message || fallback;
 };
 
-export const requireOk = (result, { baseurl } = {}) => {
-  if (result.unauthorized && baseurl) {
+export const handleApiResult = (
+  result,
+  {
+    baseurl,
+    fallback = "Something went wrong.",
+    onError,
+    onForbidden,
+    forbiddenMessage = "Access denied."
+  } = {}
+) => {
+  if (result?.unauthorized && baseurl) {
     window.location.href = `${baseurl}/login.html`;
     return false;
   }
 
-  if (!result.ok) {
-    const error = new Error(getErrorMessage(result));
-    error.result = result;
-    throw error;
+  if (result?.forbidden) {
+    if (onForbidden) {
+      onForbidden(result);
+    } else if (onError) {
+      onError(forbiddenMessage);
+    }
+    return false;
+  }
+
+  if (!result?.ok) {
+    if (onError) {
+      onError(getErrorMessage(result, fallback));
+    }
+    return false;
   }
 
   return true;

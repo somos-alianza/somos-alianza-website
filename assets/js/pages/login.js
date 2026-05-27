@@ -1,4 +1,5 @@
 import { apiFetch, getErrorMessage } from "../api_helpers.js";
+import { showBannerAlert } from "../shared.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 
@@ -24,10 +25,23 @@ async function submitLogin(e, endpoint) {
       body: JSON.stringify({ email })
     });
 
-    message.textContent = res.ok
-      ? res.message || "Success."
-      : getErrorMessage(res, "Something went wrong.");
+    if (res.unauthorized) {
+      message.textContent = getErrorMessage(res, "Unauthorized.");
+      return;
+    }
+
+    if (res.forbidden) {
+      message.textContent = getErrorMessage(res, "Access denied.");
+      return;
+    }
+
+    if (!res.ok) {
+      message.textContent = getErrorMessage(res, "Something went wrong.");
+      return;
+    }
+
+    message.textContent = res.message || "Success.";
   } catch {
-    message.textContent = "There was a network error. Please try again.";
+    showBannerAlert("There was a network error. Please try again.");
   }
 }

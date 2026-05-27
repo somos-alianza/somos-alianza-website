@@ -1,6 +1,7 @@
 import {
   clearCachedAuth,
   getAuthContext,
+  showBannerAlert,
   updateVisibility
 } from "../shared.js";
 import { apiFetch, getErrorMessage } from "../api_helpers.js";
@@ -12,7 +13,8 @@ const confirmToken = async () => {
   const isSuperuser = params.get("superuser") === "true";
 
   if (!token) return;
-  const banner = document.getElementById("banner");
+  const banner = document.getElementById("banner-alert");
+  if (!banner) return;
   const endpoint = isSuperuser ? "superuser_logins" : "user_logins";
 
   try {
@@ -31,18 +33,34 @@ const confirmToken = async () => {
       clearCachedAuth();
       await getAuthContext({ forceRefresh: true });
       await updateVisibility();
-    } else {
-      banner.textContent = getErrorMessage(
-        res,
-        "Login link expired or invalid. Please request a new one."
+      return;
+    }
+
+    if (res.unauthorized) {
+      showBannerAlert(
+        getErrorMessage(
+          res,
+          "Login link expired or invalid. Please request a new one."
+        )
       );
-      banner.style.color = "red";
+      return;
+    }
+
+    if (res.forbidden) {
+      showBannerAlert(getErrorMessage(res, "Access denied."));
+      return;
+    }
+
+    if (!res.ok) {
+      showBannerAlert(
+        getErrorMessage(
+          res,
+          "Login link expired or invalid. Please request a new one."
+        )
+      );
     }
   } catch (err) {
-    banner.style.display = "block";
-    banner.textContent =
-      "Login link expired or invalid. Please request a new one.";
-    banner.style.color = "red";
+    showBannerAlert("Login link expired or invalid. Please request a new one.");
   }
 };
 
