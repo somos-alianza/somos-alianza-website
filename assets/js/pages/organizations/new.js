@@ -1,47 +1,48 @@
-import { requireSuperuser } from "../../shared.js";
+import { requireSuperuser, showBannerAlert } from "../../shared.js";
+import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
 const form = document.getElementById("organization-form");
-const message = document.getElementById("message");
+const messageEl = document.getElementById("message");
+const titleInput = document.getElementById("title");
+const emailInput = document.getElementById("email");
 
 const submitCreate = async (e) => {
   e.preventDefault();
-  const title = document.getElementById("title").value;
 
   try {
-    const response = await fetch(`${apiUrl}/organizations`, {
+    const res = await apiFetch(`${apiUrl}/organizations`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ organization: { title } })
+      body: JSON.stringify({
+        organization: {
+          title: titleInput.value,
+          email: emailInput.value
+        }
+      })
     });
 
-    const contentType = response.headers.get("content-type") || "";
-    const isJsonResponse = contentType.includes("application/json");
-    let data = null;
-    let text = "";
-
-    if (isJsonResponse) {
-      data = await response.json();
-    } else {
-      text = await response.text();
+    const shouldContinue = handleApiResult(res, {
+      baseurl: document.body.dataset.baseurl,
+      fallback: "Something went wrong.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
+      return;
     }
 
-    if (response.ok) {
-      message.textContent =
-        (data && data.message) || text || "Organization created!";
-    } else {
-      message.textContent =
-        (data && data.errors) || text || "Something went wrong.";
-    }
-  } catch (error) {
-    message.textContent = "There was a network error. Please try again.";
+    messageEl.textContent = res.message || "Organization created!";
+    form.reset();
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 
 const init = async () => {
   const currentUser = await requireSuperuser();
-  if (!currentUser) return;
+  if (!currentUser || !form) return;
 
   form.addEventListener("submit", submitCreate);
 };

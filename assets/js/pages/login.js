@@ -1,3 +1,6 @@
+import { apiFetch, getErrorMessage } from "../api_helpers.js";
+import { showBannerAlert } from "../shared.js";
+
 const apiUrl = document.body.dataset.apiUrl;
 
 document.getElementById("user-login-form").addEventListener("submit", (e) => {
@@ -16,21 +19,29 @@ async function submitLogin(e, endpoint) {
   const message = document.getElementById("message");
 
   try {
-    const response = await fetch(`${apiUrl}/auth/${endpoint}`, {
+    const res = await apiFetch(`${apiUrl}/auth/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ email })
     });
 
-    const contentType = response.headers.get("content-type") || "";
-    const isJson = contentType.includes("application/json");
-    const data = isJson ? await response.json() : await response.text();
+    if (res.unauthorized) {
+      message.textContent = getErrorMessage(res, "Unauthorized.");
+      return;
+    }
 
-    message.textContent = response.ok
-      ? (isJson ? data.message : data) || "Success."
-      : (isJson ? data.error : data) || "Something went wrong.";
+    if (res.forbidden) {
+      message.textContent = getErrorMessage(res, "Access denied.");
+      return;
+    }
+
+    if (!res.ok) {
+      message.textContent = getErrorMessage(res, "Something went wrong.");
+      return;
+    }
+
+    message.textContent = res.message || "Success.";
   } catch {
-    message.textContent = "There was a network error. Please try again.";
+    showBannerAlert("There was a network error. Please try again.");
   }
 }

@@ -1,6 +1,8 @@
-import { requireChampion } from "../../shared.js";
+import { requireChampion, showBannerAlert } from "../../shared.js";
+import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
+const baseurl = document.body.dataset.baseurl;
 const params = new URLSearchParams(window.location.search);
 const orgId = params.get("organization_id");
 const userId = params.get("id");
@@ -13,23 +15,30 @@ const loadUserDetails = async () => {
   if (!orgId || !userId) return;
 
   try {
-    const response = await fetch(
-      `${apiUrl}/organizations/${orgId}/users/${userId}`,
-      {
-        credentials: "include"
-      }
+    const res = await apiFetch(
+      `${apiUrl}/organizations/${orgId}/users/${userId}`
     );
-    const data = await response.json();
-    const user = data.data ? data.data.attributes : null;
 
-    if (user && user.email) {
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Failed to load user details.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
+      return;
+    }
+
+    const user = res.item;
+    if (user?.email) {
       emailInput.value = user.email;
       if (canManageChampionStatus && user.champion !== undefined) {
         championCheckbox.checked = user.champion;
       }
     }
-  } catch (err) {
-    messageEl.textContent = `Failed to load user details: ${err}`;
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 
@@ -47,37 +56,31 @@ const submitUpdate = async (e) => {
   if (canManageChampionStatus) userPayload.champion = championCheckbox.checked;
 
   try {
-    const response = await fetch(
+    const res = await apiFetch(
       `${apiUrl}/organizations/${orgId}/users/${userId}`,
       {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          user: userPayload
-        })
+        body: JSON.stringify({ user: userPayload })
       }
     );
 
-    const contentType = response.headers.get("content-type") || "";
-    const isJsonResponse = contentType.includes("application/json");
-    let data = null;
-    let text = "";
-
-    if (isJsonResponse) {
-      data = await response.json();
-    } else {
-      text = await response.text();
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Something went wrong.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
+      return;
     }
 
-    if (response.ok) {
-      messageEl.textContent = (data && data.message) || text || "Success.";
-    } else {
-      messageEl.textContent =
-        (data && data.errors) || text || "Something went wrong.";
+    if (res.ok) {
+      messageEl.textContent = res.message || "Success.";
     }
-  } catch (error) {
-    messageEl.textContent = "There was a network error. Please try again.";
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 

@@ -1,6 +1,9 @@
-import { requireSuperuser } from "../../shared.js";
+import { requireSuperuser, showBannerAlert } from "../../shared.js";
+import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
 const apiUrl = document.body.dataset.apiUrl;
+const baseurl = document.body.dataset.baseurl;
+const form = document.getElementById("organization-form");
 const params = new URLSearchParams(window.location.search);
 const orgId = params.get("id");
 const messageEl = document.getElementById("message");
@@ -10,55 +13,55 @@ const loadOrganizationDetails = async () => {
   if (!orgId) return;
 
   try {
-    const response = await fetch(`${apiUrl}/organizations/${orgId}`, {
-      credentials: "include"
-    });
-    const data = await response.json();
-    const org = data.data ? data.data.attributes : null;
+    const res = await apiFetch(`${apiUrl}/organizations/${orgId}`);
 
-    if (org && org.title) {
-      titleInput.value = org.title;
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Failed to load organization details.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
+      return;
     }
-  } catch (err) {
-    messageEl.textContent = `Failed to load organization details: ${err}`;
+
+    if (res.item?.title) {
+      titleInput.value = res.item.title;
+    }
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 
 const attachUpdateListener = () => {
-  document
-    .getElementById("organization-form")
-    .addEventListener("submit", submitUpdate);
+  form.addEventListener("submit", submitUpdate);
 };
 
 const submitUpdate = async (e) => {
   e.preventDefault();
+
   try {
-    const response = await fetch(`${apiUrl}/organizations/${orgId}`, {
-      method: "PUT",
+    const res = await apiFetch(`${apiUrl}/organizations/${orgId}`, {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ organization: { title: titleInput.value } })
     });
 
-    const contentType = response.headers.get("content-type") || "";
-    const isJsonResponse = contentType.includes("application/json");
-    let data = null;
-    let text = "";
-
-    if (isJsonResponse) {
-      data = await response.json();
-    } else {
-      text = await response.text();
+    const shouldContinue = handleApiResult(res, {
+      baseurl,
+      fallback: "Something went wrong.",
+      onError: (text) => {
+        messageEl.textContent = text;
+      }
+    });
+    if (!shouldContinue) {
+      return;
     }
 
-    if (response.ok) {
-      messageEl.textContent = (data && data.message) || text || "Success.";
-    } else {
-      messageEl.textContent =
-        (data && data.errors) || text || "Something went wrong.";
-    }
-  } catch (error) {
-    messageEl.textContent = "There was a network error. Please try again.";
+    messageEl.textContent = res.message || "Updated Organization.";
+  } catch (_error) {
+    showBannerAlert("There was a network error. Please try again.");
   }
 };
 

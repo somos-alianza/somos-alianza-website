@@ -5,7 +5,7 @@
     name="id"
     value="{{ include.organization_id }}"
   />
-  <label for="title">Title</label>
+  <label for="title">Organization Title</label>
   <input
     type="text"
     id="title"
@@ -13,6 +13,16 @@
     required
     value="{{ include.title }}"
   />
+  {% if include.show_champion_email %}
+  <label for="email">Champion Email</label>
+  <input
+    type="email"
+    id="email"
+    name="email"
+    required
+    value="{{ include.email | default: '' }}"
+  />
+  {% endif %}
   <button type="submit">Save Organization</button>
 </form>
 
