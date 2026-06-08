@@ -16,39 +16,51 @@ const fetchFavorites = async () => {
   const auth = await getAuthContext();
   if (!auth?.authenticated) return [];
 
-  const res = await apiFetch(`${apiUrl}/favorites`);
-  if (res.ok) {
-    return res.items || [];
+  try {
+    const res = await apiFetch(`${apiUrl}/favorites`);
+    if (res.ok) {
+      return res.items || [];
+    }
+    return [];
+  } catch (_error) {
+    showBannerAlert("Failed to fetch favorites.");
+    return [];
   }
-  return [];
 };
 
 const toggleFavorite = async (strategyId, favoriteId, button) => {
-  const isFavorited = button.hasAttribute("data-favorite-id");
-  const icon = button.querySelector("i");
+  try {
+    const isFavorited = button.hasAttribute("data-favorite-id");
+    const icon = button.querySelector("i");
 
-  if (isFavorited) {
-    const res = await apiFetch(`${apiUrl}/favorites/${favoriteId}`, {
-      method: "DELETE"
-    });
+    if (isFavorited) {
+      const res = await apiFetch(`${apiUrl}/favorites/${favoriteId}`, {
+        method: "DELETE"
+      });
 
-    if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
-      button.removeAttribute("data-favorite-id");
-      icon.className = "fa-regular fa-bookmark";
-      showBannerAlert(res.message || "Strategy removed from favorites.");
+      if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
+        button.removeAttribute("data-favorite-id");
+        icon.className = "fa-regular fa-bookmark";
+        showBannerAlert(res.message || "Strategy removed from favorites.");
+      }
+    } else {
+      const res = await apiFetch(
+        `${apiUrl}/strategies/${strategyId}/favorites`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+
+      if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
+        const newFavoriteId = res.item?.id || res.body?.item?.id;
+        button.setAttribute("data-favorite-id", newFavoriteId);
+        icon.className = "fa-solid fa-bookmark";
+        showBannerAlert(res.message || "Strategy added to favorites.");
+      }
     }
-  } else {
-    const res = await apiFetch(`${apiUrl}/strategies/${strategyId}/favorites`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" }
-    });
-
-    if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
-      const newFavoriteId = res.item?.id || res.body?.item?.id;
-      button.setAttribute("data-favorite-id", newFavoriteId);
-      icon.className = "fa-solid fa-bookmark";
-      showBannerAlert(res.message || "Strategy added to favorites.");
-    }
+  } catch (_error) {
+    showBannerAlert("An error occurred, please try again.");
   }
 };
 
@@ -98,6 +110,7 @@ const renderOurStrategies = (allStrategies, favorites) => {
         <a href="${baseurl}/strategies/show.html?id=${strategy.id}">View Strategy</a>
         <button 
                 data-id="${strategy.id}"
+                aria-label="${isFavorited ? "Remove from favorites" : "Add to favorites"}"
                 ${isFavorited ? `data-favorite-id="${orgFavorite.id}"` : ""}>
           <i class="${isFavorited ? "fa-solid" : "fa-regular"} fa-bookmark"></i>
         </button>

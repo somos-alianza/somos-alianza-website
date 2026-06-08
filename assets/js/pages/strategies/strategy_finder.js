@@ -43,7 +43,6 @@ const toggleFavorite = async (strategyId, favoriteId, button) => {
       );
 
       if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
-        console.log(res);
         const newFavoriteId = res.item?.id;
         button.setAttribute("data-favorite-id", newFavoriteId);
         icon.className = "fa-solid fa-bookmark";
@@ -64,6 +63,7 @@ const fetchFavorites = async () => {
     if (res.ok) {
       return res.items || [];
     }
+    return [];
   } catch (_error) {
     showBannerAlert("Failed to fetch favorites.");
     return [];
@@ -102,7 +102,8 @@ const renderStrategies = (strategies, favorites = []) => {
       <div>
         <a href="${baseurl}/strategies/show.html?id=${strategy.id}">View Strategy</a>
         <button 
-                data-id="${strategy.id}" 
+                data-id="${strategy.id}"
+                aria-label="${isFavorited ? "Remove from favorites" : "Add to favorites"}"
                 ${isFavorited ? `data-favorite-id="${orgFavorite.id}"` : ""}>
           <i class="${isFavorited ? "fa-solid" : "fa-regular"} fa-bookmark"></i>
         </button>

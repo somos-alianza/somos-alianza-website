@@ -157,7 +157,7 @@ export const getEmbeddedStrategies = ({
 
 export const updateVisibility = async () => {
   const currentUser = await getAuthContext();
-  if (!currentUser) {
+  if (!currentUser && !isPublicPage()) {
     redirectToLogin();
     return;
   }
@@ -215,6 +215,14 @@ const updateNavigation = (currentUser) => {
     setLink(usersLink, null, "none");
   }
 };
+
+export const escHtml = (str) =>
+  String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 document.addEventListener("DOMContentLoaded", () => {
   updateVisibility();

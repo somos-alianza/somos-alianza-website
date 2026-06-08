@@ -1,8 +1,8 @@
 import {
   requireAuthenticated,
-  getAuthContext,
   showBannerAlert,
-  getEmbeddedStrategies
+  getEmbeddedStrategies,
+  escHtml
 } from "../../shared.js";
 import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
@@ -43,8 +43,13 @@ const fetchStrategies = async () =>
   getEmbeddedStrategies({ onError: showBannerAlert });
 
 const fetchStrategyApiData = async (id) => {
-  const result = await apiFetch(`${apiUrl}/strategies/${id}`);
-  return result.ok ? result.item : null;
+  try {
+    const result = await apiFetch(`${apiUrl}/strategies/${id}`);
+    return result.ok ? result.item : null;
+  } catch (_error) {
+    showBannerAlert("Error fetching strategy data");
+    return null;
+  }
 };
 
 const renderNotes = (notes, containerId, notableType, notableId) => {
@@ -54,8 +59,8 @@ const renderNotes = (notes, containerId, notableType, notableId) => {
   const notesList = notes
     .map(
       (note) => `
-    <div data-note-id="${note.id}">
-      <p>${note.body}</p>
+    <div data-note-id="${escHtml(note.id)}">
+      <p>${escHtml(note.body)}</p>
       ${
         isMyNote(note)
           ? `
@@ -170,7 +175,7 @@ const renderNotes = (notes, containerId, notableType, notableId) => {
     });
 
     if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
-      showBannerAlert(res.message || "Note created.", { tone: "success" });
+      showBannerAlert(res.message || "Note created.");
       textarea.value = "";
       init(); // refetch all to get fresh state including the new note
     }
