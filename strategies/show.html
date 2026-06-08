@@ -1,0 +1,31 @@
+---
+layout: default
+title: Strategy Details
+---
+
+<div>
+  <div id="strategy-content">
+    <p>Loading strategy details...</p>
+  </div>
+
+  <div id="strategy-steps" class="authorized-only"></div>
+
+  <div id="testimonials" class="authorized-only"></div>
+
+  <div id="strategy-notes" class="authorized-only"></div>
+
+  <div>
+    <a href="{{ '/strategies/our_strategies.html' | relative_url }}"
+      >View Your Strategies</a
+    >
+  </div>
+</div>
+
+<script id="strategies-data" type="text/plain">
+  {{ site.data.strategies | jsonify }}
+</script>
+
+<script
+  type="module"
+  src="{{ '/assets/js/pages/strategies/show.js' | relative_url }}"
+></script>

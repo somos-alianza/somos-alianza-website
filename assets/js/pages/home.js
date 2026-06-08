@@ -51,17 +51,15 @@ const confirmToken = async () => {
       return;
     }
 
-    if (!res.ok) {
-      showBannerAlert(
-        getErrorMessage(
-          res,
-          "Login link expired or invalid. Please request a new one."
-        )
-      );
-    }
-  } catch (err) {
+    showBannerAlert(
+      getErrorMessage(
+        res,
+        "Login link expired or invalid. Please request a new one."
+      )
+    );
+  } catch (_err) {
     showBannerAlert("Login link expired or invalid. Please request a new one.");
   }
 };
 
-confirmToken();
+document.addEventListener("DOMContentLoaded", confirmToken);

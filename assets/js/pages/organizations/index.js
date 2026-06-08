@@ -75,4 +75,4 @@ const init = async () => {
   await loadOrganizations();
 };
 
-init();
+document.addEventListener("DOMContentLoaded", init);

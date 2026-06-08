@@ -67,4 +67,4 @@ const init = async () => {
   }
 };
 
-init();
+document.addEventListener("DOMContentLoaded", init);

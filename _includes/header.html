@@ -1,11 +1,20 @@
 <header>
   <nav>
     <a href="{{ '/' | relative_url }}">Home</a>
+    <a href="{{ '/about.html' | relative_url }}">About</a>
     <a
-      href="{{ '/organizations/index.html' | relative_url }}"
-      class="superuser-only"
-      >Organizations</a
+      id="strategy-finder-link"
+      href="{{ '/strategies/strategy_finder.html' | relative_url }}"
+      class="authorized-only"
+      >Strategy Finder</a
     >
+    <a
+      id="our-strategies-link"
+      href="{{ '/strategies/our_strategies.html' | relative_url }}"
+      class="authorized-only"
+      >Our Strategies</a
+    >
+    <a href="{{ '/contact_us.html' | relative_url }}">Contact Us</a>
     <a
       id="users-link"
       aria-label="Manage users"
@@ -14,6 +23,11 @@
     >
       <i class="fa-regular fa-user"></i>
     </a>
+    <a
+      href="{{ '/organizations/index.html' | relative_url }}"
+      class="superuser-only"
+      >Organizations</a
+    >
   </nav>
 </header>
 

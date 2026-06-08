@@ -47,4 +47,4 @@ const init = async () => {
   form.addEventListener("submit", submitCreate);
 };
 
-init();
+document.addEventListener("DOMContentLoaded", init);
