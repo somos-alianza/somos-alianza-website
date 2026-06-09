@@ -100,4 +100,4 @@ const init = async () => {
   await loadUsers();
 };
 
-init();
+document.addEventListener("DOMContentLoaded", init);

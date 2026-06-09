@@ -1,0 +1,158 @@
+[
+  {
+    "id": 1,
+    "title": "1 Lyft Services",
+    "subtitle": "Starting a Lyft Transportation Program",
+    "short_description": "Lyft Services strategy",
+    "description": "<p>A transportation assistance strategy that helps Latino MSM access PrEP and mental health/substance use serices by providing reliable, confidential, and low-burden transportation to and from appointments.</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "sop_link": "/assets/SOPs/Test%20SOP.pdf",
+    "image": "/assets/images/lyft_img.png",
+    "image_alt": "man in a lyft",
+    "what_is_this_strategy": "This strategy involves...",
+    "fast_facts": {
+      "outcome": "Improve patient attendance and engagement in PrEP & MH/SU services.",
+      "ttl": "2-4 weeks",
+      "cost": "Moderate (Average rides cost $XX)",
+      "complexity": "Low",
+      "staffing": "Low"
+    },
+    "when_to_use": "Use this strategy if you are...",
+    "why_it_works": [
+      "Reduces barriers...",
+      "Reduces stigma...",
+      "Reduces costs...",
+      "<b>Decreases missed or late appointments</b>..."
+    ],
+    "categories": ["Transportation", "Patient Engagement"]
+  },
+  {
+    "id": 2,
+    "title": "2 Other Strategy",
+    "subtitle": "Starting Another Strategy",
+    "short_description": "Other Strategy short description",
+    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "sop_link": "/assets/SOPs/Test%20SOP.pdf",
+    "image": "/assets/images/lyft_img.png",
+    "image_alt": "man in a lyft",
+    "what_is_this_strategy": "This strategy involves...",
+    "fast_facts": {
+      "outcome": "Improve patient attendance and engagement in PrEP & MH/SU services.",
+      "ttl": "2-4 weeks",
+      "cost": "Moderate (Average rides cost $XX)",
+      "complexity": "Low",
+      "staffing": "Low"
+    },
+    "when_to_use": "Use this strategy if you are...",
+    "why_it_works": [
+      "Reduces barriers...",
+      "Reduces stigma...",
+      "Reduces costs...",
+      "<b>Decreases missed or late appointments</b>..."
+    ],
+    "categories": ["Other stuff", "Other categories"]
+  },
+  {
+    "id": 3,
+    "title": "3 Other Strategy",
+    "subtitle": "Starting Another Strategy",
+    "short_description": "Third Other Strategy short description",
+    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "sop_link": "/assets/SOPs/Test%20SOP.pdf",
+    "image": "/assets/images/lyft_img.png",
+    "image_alt": "man in a lyft",
+    "what_is_this_strategy": "This strategy involves...",
+    "fast_facts": {
+      "outcome": "Improve patient attendance and engagement in PrEP & MH/SU services.",
+      "ttl": "2-4 weeks",
+      "cost": "Moderate (Average rides cost $XX)",
+      "complexity": "Low",
+      "staffing": "Low"
+    },
+    "when_to_use": "Use this strategy if you are...",
+    "why_it_works": [
+      "Reduces barriers...",
+      "Reduces stigma...",
+      "Reduces costs...",
+      "<b>Decreases missed or late appointments</b>..."
+    ],
+    "categories": ["Other stuff", "Other categories"]
+  },
+  {
+    "id": 4,
+    "title": "4 strategy",
+    "subtitle": "Starting a fourth strategy",
+    "short_description": "4 strategy",
+    "description": "<p>A transportation assistance strategy that helps Latino MSM access PrEP and mental health/substance use serices by providing reliable, confidential, and low-burden transportation to and from appointments.</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "sop_link": "/assets/SOPs/Test%20SOP.pdf",
+    "image": "/assets/images/lyft_img.png",
+    "image_alt": "man in a lyft",
+    "what_is_this_strategy": "This strategy involves...",
+    "fast_facts": {
+      "outcome": "Improve patient attendance and engagement in PrEP & MH/SU services.",
+      "ttl": "2-4 weeks",
+      "cost": "Moderate (Average rides cost $XX)",
+      "complexity": "Low",
+      "staffing": "Low"
+    },
+    "when_to_use": "Use this strategy if you are...",
+    "why_it_works": [
+      "Reduces barriers...",
+      "Reduces stigma...",
+      "Reduces costs...",
+      "<b>Decreases missed or late appointments</b>..."
+    ],
+    "categories": ["Transportation", "Patient Engagement"]
+  },
+  {
+    "id": 5,
+    "title": "5 Other Strategy",
+    "subtitle": "Starting Another Strategy",
+    "short_description": "Other Strategy short description",
+    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "sop_link": "/assets/SOPs/Test%20SOP.pdf",
+    "image": "/assets/images/lyft_img.png",
+    "image_alt": "man in a lyft",
+    "what_is_this_strategy": "This strategy involves...",
+    "fast_facts": {
+      "outcome": "Improve patient attendance and engagement in PrEP & MH/SU services.",
+      "ttl": "2-4 weeks",
+      "cost": "Moderate (Average rides cost $XX)",
+      "complexity": "Low",
+      "staffing": "Low"
+    },
+    "when_to_use": "Use this strategy if you are...",
+    "why_it_works": [
+      "Reduces barriers...",
+      "Reduces stigma...",
+      "Reduces costs...",
+      "<b>Decreases missed or late appointments</b>..."
+    ],
+    "categories": ["Other stuff", "Other categories"]
+  },
+  {
+    "id": 6,
+    "title": "6 Other Strategy",
+    "subtitle": "Starting Another Strategy",
+    "short_description": "Third Other Strategy short description",
+    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "sop_link": "/assets/SOPs/Test%20SOP.pdf",
+    "image": "/assets/images/lyft_img.png",
+    "image_alt": "man in a lyft",
+    "what_is_this_strategy": "This strategy involves...",
+    "fast_facts": {
+      "outcome": "Improve patient attendance and engagement in PrEP & MH/SU services.",
+      "ttl": "2-4 weeks",
+      "cost": "Moderate (Average rides cost $XX)",
+      "complexity": "Low",
+      "staffing": "Low"
+    },
+    "when_to_use": "Use this strategy if you are...",
+    "why_it_works": [
+      "Reduces barriers...",
+      "Reduces stigma...",
+      "Reduces costs...",
+      "<b>Decreases missed or late appointments</b>..."
+    ],
+    "categories": ["Other stuff", "Other categories"]
+  }
+]

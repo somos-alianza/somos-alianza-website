@@ -103,4 +103,4 @@ const init = async () => {
   attachUpdateListener();
 };
 
-init();
+document.addEventListener("DOMContentLoaded", init);

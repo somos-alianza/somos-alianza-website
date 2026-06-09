@@ -1,0 +1,22 @@
+---
+layout: default
+title: Strategy Finder
+---
+
+<div>
+  <h1>Strategy Finder</h1>
+  <p>Explore our strategies and find the best fit for your needs.</p>
+
+  <div id="strategies-container">
+    <p>Loading strategies...</p>
+  </div>
+</div>
+
+<script id="strategies-data" type="text/plain">
+  {{ site.data.strategies | jsonify }}
+</script>
+
+<script
+  type="module"
+  src="{{ '/assets/js/pages/strategies/strategy_finder.js' | relative_url }}"
+></script>

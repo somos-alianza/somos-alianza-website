@@ -13,21 +13,37 @@ const ROLE_LEVEL = {
 
 let inFlightAuthPromise = null;
 
-const redirectToLogin = () => {
-  window.location.href = `${baseurl}/login.html`;
-};
-
 const hasRole = (role, minimumRole) =>
   (ROLE_LEVEL[role] || 0) >= (ROLE_LEVEL[minimumRole] || 0);
 
+const storage = window.localStorage;
+
+const PUBLIC_PATHS = new Set([
+  "/",
+  "/index.html",
+  "/login.html",
+  "/about.html",
+  "/contact_us.html"
+]);
+
+const isPublicPage = () => {
+  const normalizedPath = window.location.pathname.replace(baseurl, "") || "/";
+  return PUBLIC_PATHS.has(normalizedPath);
+};
+
+const redirectToLogin = () => {
+  if (isPublicPage()) return;
+  window.location.href = `${baseurl}/login.html`;
+};
+
 const readCachedAuth = () => {
   try {
-    const raw = localStorage.getItem(AUTH_CACHE_KEY);
+    const raw = storage.getItem(AUTH_CACHE_KEY);
     if (!raw) return null;
 
     const { data, expiresAt } = JSON.parse(raw);
     if (!expiresAt || Date.now() > expiresAt) {
-      localStorage.removeItem(AUTH_CACHE_KEY);
+      storage.removeItem(AUTH_CACHE_KEY);
       return null;
     }
 
@@ -38,7 +54,7 @@ const readCachedAuth = () => {
 };
 
 const writeCachedAuth = (data) => {
-  localStorage.setItem(
+  storage.setItem(
     AUTH_CACHE_KEY,
     JSON.stringify({
       data,
@@ -48,7 +64,7 @@ const writeCachedAuth = (data) => {
 };
 
 export const clearCachedAuth = () => {
-  localStorage.removeItem(AUTH_CACHE_KEY);
+  storage.removeItem(AUTH_CACHE_KEY);
 };
 
 const fetchAuthSession = async () => {
@@ -70,9 +86,8 @@ const fetchAuthSession = async () => {
 };
 
 export const getAuthContext = async ({ forceRefresh = false } = {}) => {
-  if (!forceRefresh) {
-    return readCachedAuth();
-  }
+  const cached = !forceRefresh ? readCachedAuth() : null;
+  if (cached) return cached;
 
   if (!inFlightAuthPromise) {
     inFlightAuthPromise = fetchAuthSession().finally(() => {
@@ -84,12 +99,27 @@ export const getAuthContext = async ({ forceRefresh = false } = {}) => {
 };
 
 const requireRole = async (minimumRole = "user") => {
-  const currentUser = await getAuthContext();
-  if (!currentUser?.authenticated || !hasRole(currentUser.role, minimumRole)) {
-    redirectToLogin();
+  let currentUser = await getAuthContext();
+  try {
+    if (!currentUser?.authenticated) {
+      currentUser = await getAuthContext({ forceRefresh: true });
+    }
+
+    if (
+      !currentUser?.authenticated ||
+      !hasRole(currentUser.role, minimumRole)
+    ) {
+      redirectToLogin();
+      return null;
+    }
+
+    return currentUser;
+  } catch (_error) {
+    showBannerAlert(
+      "An error occurred while verifying authentication. Please try again."
+    );
     return null;
   }
-  return currentUser;
 };
 
 export const requireAuthenticated = async () => requireRole("user");
@@ -101,14 +131,39 @@ export const showBannerAlert = (text) => {
   if (!bannerEl) return;
 
   bannerEl.style.display = "block";
-  bannerEl.style.color = "red";
+  bannerEl.style.color = "blue";
   bannerEl.textContent = text;
+};
+
+export const getEmbeddedStrategies = ({
+  elementId = "strategies-data",
+  onError,
+  errorMessage = "Failed to load strategies data."
+} = {}) => {
+  try {
+    const strategiesDataEl = document.getElementById(elementId);
+    if (!strategiesDataEl?.textContent) {
+      if (onError) onError(errorMessage);
+      return [];
+    }
+
+    const parsed = JSON.parse(strategiesDataEl.textContent);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_error) {
+    if (onError) onError(errorMessage);
+    return [];
+  }
 };
 
 export const updateVisibility = async () => {
   const currentUser = await getAuthContext();
+  if (!currentUser && !isPublicPage()) {
+    redirectToLogin();
+    return;
+  }
   const authenticated = Boolean(currentUser?.authenticated);
   const role = authenticated ? currentUser.role : null;
+
   const visibilityRules = [
     [".authorized-only", authenticated],
     [".champion-only", hasRole(role, "champion")],
@@ -120,33 +175,54 @@ export const updateVisibility = async () => {
       el.style.display = allowed ? "initial" : "none";
     });
   });
-  updateUsersLink(currentUser);
+
+  updateNavigation(currentUser);
 };
 
-const updateUsersLink = (currentUser) => {
+const updateNavigation = (currentUser) => {
   const usersLink = document.getElementById("users-link");
-  if (!usersLink) return;
+  const strategyFinderLink = document.getElementById("strategy-finder-link");
+  const ourStrategiesLink = document.getElementById("our-strategies-link");
+
+  const setLink = (el, href, display = null) => {
+    if (!el) return;
+    if (display !== null) {
+      el.style.display = display;
+    }
+    if (href) {
+      el.href = href;
+    } else {
+      el.removeAttribute("href");
+    }
+  };
 
   if (!currentUser?.authenticated) {
-    usersLink.style.display = "";
-    usersLink.href = `${baseurl}/login.html`;
+    setLink(usersLink, `${baseurl}/login.html`);
     return;
   }
+
+  setLink(strategyFinderLink, `${baseurl}/strategies/strategy_finder.html`);
+  setLink(ourStrategiesLink, `${baseurl}/strategies/our_strategies.html`);
 
   if (currentUser.role === "champion") {
-    usersLink.style.display = "";
-    const organizationId = encodeURIComponent(
-      currentUser.organization_id || ""
+    const orgId = encodeURIComponent(currentUser.organization_id || "");
+    setLink(
+      usersLink,
+      `${baseurl}/users/index.html?organization_id=${orgId}`,
+      "initial"
     );
-    usersLink.href = `${baseurl}/users/index.html?organization_id=${organizationId}`;
-    return;
-  }
-
-  if (currentUser.role === "superuser" || currentUser.role === "user") {
-    usersLink.style.display = "none";
-    usersLink.removeAttribute("href");
+  } else {
+    setLink(usersLink, null, "none");
   }
 };
+
+export const escHtml = (str) =>
+  String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 document.addEventListener("DOMContentLoaded", () => {
   updateVisibility();
