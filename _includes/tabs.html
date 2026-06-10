@@ -1,0 +1,147 @@
+<div class="tabs" data-tabs>
+  <ul class="tabs__list" role="tablist">
+    <li>
+      <button class="tabs__btn" role="tab" aria-selected="true" data-tab="1">
+        Overview
+      </button>
+    </li>
+    <li>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="2">
+        Details
+      </button>
+    </li>
+    <li>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="3">
+        Settings
+      </button>
+    </li>
+  </ul>
+  <div class="tabs__indicator" aria-hidden="true"></div>
+
+  <div class="tabs__panels">
+    <div class="tabs__panel" id="tab-panel-1" role="tabpanel">
+      <p>Overview content goes here.</p>
+    </div>
+
+    <div class="tabs__panel" id="tab-panel-2" role="tabpanel">
+      <p>Details content goes here.</p>
+    </div>
+
+    <div class="tabs__panel" id="tab-panel-3" role="tabpanel">
+      <p>Settings content goes here.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .tabs {
+    position: relative;
+  }
+
+  .tabs__list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1.5px solid #e0e0e0;
+    position: relative;
+  }
+
+  .tabs__btn {
+    background: none;
+    border: none;
+    padding: 10px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s;
+  }
+
+  .tabs__btn:hover {
+    color: #111;
+  }
+  .tabs__btn[aria-selected="true"] {
+    color: #111;
+    font-weight: 500;
+  }
+
+  .tabs__indicator {
+    position: absolute;
+    bottom: -1.5px;
+    height: 2px;
+    background: #111;
+    border-radius: 2px 2px 0 0;
+    transition:
+      left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .tabs__panel {
+    display: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease;
+    padding-top: 1.25rem;
+  }
+
+  .tabs__panel--active {
+    display: block;
+  }
+  .tabs__panel--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  (function () {
+    document.querySelectorAll("[data-tabs]").forEach(function (wrapper) {
+      var btns = Array.from(wrapper.querySelectorAll(".tabs__btn"));
+      var panels = Array.from(wrapper.querySelectorAll(".tabs__panel"));
+      var indicator = wrapper.querySelector(".tabs__indicator");
+
+      function moveIndicator(btn) {
+        indicator.style.left = btn.offsetLeft + "px";
+        indicator.style.width = btn.offsetWidth + "px";
+      }
+
+      function activate(index) {
+        btns.forEach(function (b) {
+          b.setAttribute("aria-selected", "false");
+        });
+        panels.forEach(function (p) {
+          p.classList.remove("tabs__panel--visible");
+          setTimeout(function () {
+            if (!p.classList.contains("tabs__panel--active")) return;
+            p.classList.remove("tabs__panel--active");
+          }, 220);
+        });
+
+        btns[index].setAttribute("aria-selected", "true");
+        moveIndicator(btns[index]);
+
+        var panel = panels[index];
+        panel.classList.add("tabs__panel--active");
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            panel.classList.add("tabs__panel--visible");
+          });
+        });
+      }
+
+      btns.forEach(function (btn, i) {
+        btn.addEventListener("click", function () {
+          activate(i);
+        });
+      });
+
+      var activeBtn =
+        btns.find(function (b) {
+          return b.getAttribute("aria-selected") === "true";
+        }) || btns[0];
+      moveIndicator(activeBtn);
+    });
+  })();
+</script>

@@ -23,7 +23,8 @@ const PUBLIC_PATHS = new Set([
   "/index.html",
   "/login.html",
   "/about.html",
-  "/contact_us.html"
+  "/contact_us.html",
+  "/components.html"
 ]);
 
 const isPublicPage = () => {
@@ -33,6 +34,7 @@ const isPublicPage = () => {
 
 const redirectToLogin = () => {
   if (isPublicPage()) return;
+  console.log(isPublicPage());
   window.location.href = `${baseurl}/login.html`;
 };
 
