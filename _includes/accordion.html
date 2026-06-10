@@ -1,0 +1,162 @@
+<div class="accordion">
+  <div class="accordion__item accordion__item--open">
+    <button class="accordion__trigger" aria-expanded="true">
+      What is this accordion?
+      <span class="accordion__icon" aria-hidden="true"></span>
+    </button>
+    <div class="accordion__body">
+      <div class="accordion__inner">
+        <p>
+          This is the answer to the first question. Add whatever HTML you like
+          inside here — paragraphs, lists, images, code blocks, the works.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion__item">
+    <button class="accordion__trigger" aria-expanded="false">
+      How does the animation work?
+      <span class="accordion__icon" aria-hidden="true"></span>
+    </button>
+    <div class="accordion__body">
+      <div class="accordion__inner">
+        <p>
+          It animates <code>grid-template-rows</code> from <code>0fr</code> to
+          <code>1fr</code>. The inner div has <code>overflow: hidden</code>,
+          which lets the grid row crush it to zero height cleanly. No JavaScript
+          height measurement needed.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion__item">
+    <button class="accordion__trigger" aria-expanded="false">
+      Can multiple items be open at once?
+      <span class="accordion__icon" aria-hidden="true"></span>
+    </button>
+    <div class="accordion__body">
+      <div class="accordion__inner">
+        <p>
+          By default no — opening one closes the others. If you want independent
+          toggle behaviour, remove the <code>others.forEach(close)</code> line
+          from the script below.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .accordion {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .accordion__item {
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .accordion__item:last-child {
+    border-bottom: none;
+  }
+
+  .accordion__trigger {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    transition: background 0.15s;
+  }
+
+  .accordion__trigger:hover {
+    background: #f5f5f5;
+  }
+
+  /* Chevron drawn with CSS — no icon font required */
+  .accordion__icon {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    flex-shrink: 0;
+    margin-left: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  .accordion__item--open .accordion__icon {
+    transform: rotate(-135deg);
+  }
+
+  /* The grid animation — the only trick needed */
+  .accordion__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .accordion__item--open .accordion__body {
+    grid-template-rows: 1fr;
+  }
+
+  .accordion__inner {
+    overflow: hidden;
+  }
+
+  .accordion__inner p,
+  .accordion__inner ul,
+  .accordion__inner ol {
+    margin: 0;
+    padding: 0.25rem 1.25rem 1.25rem;
+    color: #555;
+    line-height: 1.65;
+  }
+</style>
+
+<script>
+  (function () {
+    var items = Array.from(document.querySelectorAll(".accordion__item"));
+
+    function open(item) {
+      item.classList.add("accordion__item--open");
+      item
+        .querySelector(".accordion__trigger")
+        .setAttribute("aria-expanded", "true");
+    }
+
+    function close(item) {
+      item.classList.remove("accordion__item--open");
+      item
+        .querySelector(".accordion__trigger")
+        .setAttribute("aria-expanded", "false");
+    }
+
+    items.forEach(function (item) {
+      item
+        .querySelector(".accordion__trigger")
+        .addEventListener("click", function () {
+          var isOpen = item.classList.contains("accordion__item--open");
+
+          // Close all others
+          items.forEach(function (other) {
+            if (other !== item) close(other);
+          });
+
+          // Toggle clicked item
+          isOpen ? close(item) : open(item);
+        });
+    });
+  })();
+</script>
