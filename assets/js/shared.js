@@ -67,6 +67,38 @@ export const clearCachedAuth = () => {
   storage.removeItem(AUTH_CACHE_KEY);
 };
 
+// TODO: Strictly for dev/manual testing, will be removed in production.
+const clearAuthStorage = () => {
+  clearCachedAuth();
+};
+
+const clearAuthCookies = () => {
+  const authCookieNames = ["user_auth_token", "superuser_auth_token"];
+  const paths = ["/"];
+  if (baseurl && baseurl !== "/") {
+    paths.push(baseurl);
+  }
+
+  authCookieNames.forEach((name) => {
+    const encodedName = encodeURIComponent(name);
+    paths.forEach((path) => {
+      document.cookie = `${encodedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; SameSite=Lax`;
+    });
+  });
+};
+
+const logoutClientSide = async () => {
+  try {
+    await apiFetch(`${apiUrl}/auth/logout`, {
+      method: "DELETE"
+    });
+  } catch (_error) {}
+  clearAuthStorage();
+  clearAuthCookies();
+  window.location.reload();
+};
+// TODO end: Strictly for dev/manual testing, will be removed in production.
+
 const fetchAuthSession = async () => {
   let res;
   try {
@@ -225,5 +257,10 @@ export const escHtml = (str) =>
     .replace(/'/g, "&#39;");
 
 document.addEventListener("DOMContentLoaded", () => {
+  const logoutButton = document.getElementById("logout-button");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", logoutClientSide);
+  }
+
   updateVisibility();
 });
