@@ -4,7 +4,13 @@ import {
   showBannerAlert,
   updateVisibility
 } from "../shared.js";
-import { apiFetch, getErrorMessage } from "../api_helpers.js";
+import {
+  apiFetch,
+  clearStoredAuthToken,
+  getErrorMessage,
+  setStoredAuthToken
+} from "../api_helpers.js";
+
 const apiUrl = document.body.dataset.apiUrl;
 
 const confirmToken = async () => {
@@ -27,6 +33,16 @@ const confirmToken = async () => {
     banner.style.display = "block";
 
     if (res.ok) {
+      if (
+        !isSuperuser &&
+        res.body?.token_type === "Bearer" &&
+        res.body?.auth_token
+      ) {
+        setStoredAuthToken(res.body.auth_token);
+      } else if (isSuperuser) {
+        clearStoredAuthToken();
+      }
+
       banner.textContent = res.message || "You're signed in!";
       banner.style.color = "green";
 

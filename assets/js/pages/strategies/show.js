@@ -1,8 +1,7 @@
 import {
   requireAuthenticated,
   showBannerAlert,
-  getEmbeddedStrategies,
-  escHtml
+  getEmbeddedStrategies
 } from "../../shared.js";
 import { apiFetch, handleApiResult } from "../../api_helpers.js";
 
@@ -52,42 +51,79 @@ const fetchStrategyApiData = async (id) => {
   }
 };
 
+const appendHeading = (parent, level, text) => {
+  const heading = document.createElement(`h${level}`);
+  heading.textContent = text;
+  parent.appendChild(heading);
+};
+
+const appendParagraph = (parent, text) => {
+  const paragraph = document.createElement("p");
+  paragraph.textContent = text || "";
+  parent.appendChild(paragraph);
+};
+
+const createNoteCard = (note) => {
+  const noteEl = document.createElement("div");
+  noteEl.dataset.noteId = String(note.id);
+
+  const body = document.createElement("p");
+  body.textContent = note.body || "";
+  noteEl.appendChild(body);
+
+  if (isMyNote(note)) {
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.dataset.action = "edit-note";
+    editBtn.textContent = "Edit";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.dataset.action = "delete-note";
+    deleteBtn.textContent = "Delete";
+
+    noteEl.appendChild(editBtn);
+    noteEl.appendChild(deleteBtn);
+  }
+
+  return noteEl;
+};
+
 const renderNotes = (notes, containerId, notableType, notableId) => {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const notesList = notes
-    .map(
-      (note) => `
-    <div data-note-id="${escHtml(note.id)}">
-      <p>${escHtml(note.body)}</p>
-      ${
-        isMyNote(note)
-          ? `
-        <button type="button" data-action="edit-note">Edit</button>
-        <button type="button" data-action="delete-note">Delete</button>
-      `
-          : ""
-      }
-    </div>
-  `
-    )
-    .join("");
+  container.replaceChildren();
 
-  container.innerHTML = `
-    <h4>Notes</h4>
-    <div data-notes-list>${notesList}</div>
-    <form>
-      <textarea name="body" placeholder="Add a note..." required></textarea>
-      <button type="submit">Add Note</button>
-      <button type="button" data-action="cancel-edit" style="display:none;">Cancel</button>
-    </form>
-  `;
+  appendHeading(container, 4, "Notes");
 
-  const form = container.querySelector("form");
-  const textarea = form.querySelector('textarea[name="body"]');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const cancelEditBtn = form.querySelector('[data-action="cancel-edit"]');
+  const notesListEl = document.createElement("div");
+  notesListEl.dataset.notesList = "true";
+  notes.forEach((note) => {
+    notesListEl.appendChild(createNoteCard(note));
+  });
+  container.appendChild(notesListEl);
+
+  const form = document.createElement("form");
+  const textarea = document.createElement("textarea");
+  textarea.name = "body";
+  textarea.placeholder = "Add a note...";
+  textarea.required = true;
+
+  const submitBtn = document.createElement("button");
+  submitBtn.type = "submit";
+  submitBtn.textContent = "Add Note";
+
+  const cancelEditBtn = document.createElement("button");
+  cancelEditBtn.type = "button";
+  cancelEditBtn.dataset.action = "cancel-edit";
+  cancelEditBtn.style.display = "none";
+  cancelEditBtn.textContent = "Cancel";
+
+  form.appendChild(textarea);
+  form.appendChild(submitBtn);
+  form.appendChild(cancelEditBtn);
+  container.appendChild(form);
 
   const setCreateMode = () => {
     form.removeAttribute("data-editing-note-id");
@@ -105,7 +141,6 @@ const renderNotes = (notes, containerId, notableType, notableId) => {
     cancelEditBtn.style.display = "inline-block";
   };
 
-  const notesListEl = container.querySelector("[data-notes-list]");
   notesListEl.addEventListener("click", async (event) => {
     const target = event.target.closest("[data-action]");
     if (!target) return;
@@ -187,88 +222,114 @@ const renderStrategy = (strategy, apiData) => {
   if (!container) return;
 
   if (!strategy) {
-    container.innerHTML = "<p>Strategy not found.</p>";
+    container.replaceChildren();
+    appendParagraph(container, "Strategy not found.");
     return;
   }
 
-  const fastFactsHtml = strategy.fast_facts
-    ? `
-    <div>
-      <h3>Fast Facts</h3>
-      <ul>
-        <li><b>Outcome:</b> ${strategy.fast_facts.outcome || "N/A"}</li>
-        <li><b>Time to Launch:</b> ${strategy.fast_facts.ttl || "N/A"}</li>
-        <li><b>Cost:</b> ${strategy.fast_facts.cost || "N/A"}</li>
-        <li><b>Complexity:</b> ${strategy.fast_facts.complexity || "N/A"}</li>
-        <li><b>Staffing:</b> ${strategy.fast_facts.staffing || "N/A"}</li>
-      </ul>
-    </div>
-  `
-    : "";
+  container.replaceChildren();
 
-  const whyItWorksHtml = Array.isArray(strategy.why_it_works)
-    ? `
-    <h3>Why it Works</h3>
-    <ul>
-      ${strategy.why_it_works.map((item) => `<li>${item}</li>`).join("")}
-    </ul>
-  `
-    : "";
+  const titleBlock = document.createElement("div");
+  const title = document.createElement("h1");
+  title.textContent = strategy.title || "";
+  titleBlock.appendChild(title);
+  if (strategy.subtitle) {
+    appendParagraph(titleBlock, strategy.subtitle);
+  }
+  container.appendChild(titleBlock);
 
-  container.innerHTML = `
-    <div>
-      <h1>${strategy.title}</h1>
-      ${strategy.subtitle ? `<p>${strategy.subtitle}</p>` : ""}
-    </div>
+  const detailsBlock = document.createElement("div");
 
-    <div>
-      ${
-        strategy.image
-          ? `<img src="${baseurl}${strategy.image}" alt="${strategy.image_alt || ""}">`
-          : ""
-      }
-      
-      <div>
-        ${strategy.description || ""}
-      </div>
+  if (strategy.image) {
+    const image = document.createElement("img");
+    image.src = `${baseurl}${strategy.image}`;
+    image.alt = strategy.image_alt || "";
+    detailsBlock.appendChild(image);
+  }
 
-      ${fastFactsHtml}
+  const description = document.createElement("div");
+  description.textContent = strategy.description || "";
+  detailsBlock.appendChild(description);
 
-      <div>
-        <h3>What is this strategy?</h3>
-        <p>${strategy.what_is_this_strategy || ""}</p>
-      </div>
+  if (strategy.fast_facts) {
+    const fastFacts = document.createElement("div");
+    appendHeading(fastFacts, 3, "Fast Facts");
+    const list = document.createElement("ul");
+    const facts = [
+      ["Outcome", strategy.fast_facts.outcome || "N/A"],
+      ["Time to Launch", strategy.fast_facts.ttl || "N/A"],
+      ["Cost", strategy.fast_facts.cost || "N/A"],
+      ["Complexity", strategy.fast_facts.complexity || "N/A"],
+      ["Staffing", strategy.fast_facts.staffing || "N/A"]
+    ];
 
-      <div>
-        <h3>When to use</h3>
-        <p>${strategy.when_to_use || ""}</p>
-      </div>
+    facts.forEach(([label, value]) => {
+      const item = document.createElement("li");
+      const strong = document.createElement("b");
+      strong.textContent = `${label}:`;
+      item.appendChild(strong);
+      item.appendChild(document.createTextNode(` ${value}`));
+      list.appendChild(item);
+    });
 
-      ${whyItWorksHtml}
-      
-      ${
-        strategy.sop_link
-          ? `
-        <div>
-          <a href="${baseurl}${strategy.sop_link}" target="_blank">Download SOP (PDF)</a>
-        </div>
-      `
-          : ""
-      }
-    </div>
-  `;
+    fastFacts.appendChild(list);
+    detailsBlock.appendChild(fastFacts);
+  }
+
+  const whatIsBlock = document.createElement("div");
+  appendHeading(whatIsBlock, 3, "What is this strategy?");
+  appendParagraph(whatIsBlock, strategy.what_is_this_strategy || "");
+  detailsBlock.appendChild(whatIsBlock);
+
+  const whenToUseBlock = document.createElement("div");
+  appendHeading(whenToUseBlock, 3, "When to use");
+  appendParagraph(whenToUseBlock, strategy.when_to_use || "");
+  detailsBlock.appendChild(whenToUseBlock);
+
+  if (
+    Array.isArray(strategy.why_it_works) &&
+    strategy.why_it_works.length > 0
+  ) {
+    const whyBlock = document.createElement("div");
+    appendHeading(whyBlock, 3, "Why it Works");
+    const list = document.createElement("ul");
+    strategy.why_it_works.forEach((entry) => {
+      const item = document.createElement("li");
+      item.textContent = String(entry);
+      list.appendChild(item);
+    });
+    whyBlock.appendChild(list);
+    detailsBlock.appendChild(whyBlock);
+  }
+
+  if (strategy.sop_link) {
+    const sopBlock = document.createElement("div");
+    const sopLink = document.createElement("a");
+    sopLink.href = `${baseurl}${strategy.sop_link}`;
+    sopLink.target = "_blank";
+    sopLink.rel = "noopener noreferrer";
+    sopLink.textContent = "Download SOP (PDF)";
+    sopBlock.appendChild(sopLink);
+    detailsBlock.appendChild(sopBlock);
+  }
+
+  container.appendChild(detailsBlock);
 
   const stepsContainer = document.getElementById("strategy-steps");
   if (stepsContainer && apiData?.strategy_steps) {
-    stepsContainer.innerHTML = `<h3>Strategy Steps</h3>`;
+    stepsContainer.replaceChildren();
+    appendHeading(stepsContainer, 3, "Strategy Steps");
     apiData.strategy_steps.forEach((step) => {
       const stepEl = document.createElement("div");
-      stepEl.innerHTML = `
-        <div>
-          <p>${step.description}</p>
-          <div id="step-notes-${step.id}"></div>
-        </div>
-      `;
+      const inner = document.createElement("div");
+      const descriptionEl = document.createElement("p");
+      descriptionEl.textContent = step.description || "";
+      const notesEl = document.createElement("div");
+      notesEl.id = `step-notes-${step.id}`;
+
+      inner.appendChild(descriptionEl);
+      inner.appendChild(notesEl);
+      stepEl.appendChild(inner);
       stepsContainer.appendChild(stepEl);
       renderNotes(
         step.notes.filter(
@@ -283,21 +344,23 @@ const renderStrategy = (strategy, apiData) => {
 
   const testimonialsContainer = document.getElementById("testimonials");
   if (testimonialsContainer && apiData?.testimonials) {
-    testimonialsContainer.innerHTML = `
-      <h3>Testimonials</h3>
-      <div>
-        ${apiData.testimonials
-          .map(
-            (t) => `
-          <div>
-            <blockquote>${t.body}</blockquote>
-            <cite>- Organization ${t.organization_id}</cite>
-          </div>
-        `
-          )
-          .join("")}
-      </div>
-    `;
+    testimonialsContainer.replaceChildren();
+    appendHeading(testimonialsContainer, 3, "Testimonials");
+    const list = document.createElement("div");
+
+    apiData.testimonials.forEach((t) => {
+      const testimonial = document.createElement("div");
+      const quote = document.createElement("blockquote");
+      quote.textContent = t.body || "";
+      const cite = document.createElement("cite");
+      cite.textContent = `- Organization ${t.organization_id}`;
+
+      testimonial.appendChild(quote);
+      testimonial.appendChild(cite);
+      list.appendChild(testimonial);
+    });
+
+    testimonialsContainer.appendChild(list);
   }
 
   if (apiData) {
@@ -316,7 +379,7 @@ const init = async () => {
   currentUserId = await resolveCurrentUserId(auth);
 
   const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get("id"));
+  const id = parseInt(params.get("id"), 10);
 
   if (isNaN(id)) {
     renderStrategy(null);

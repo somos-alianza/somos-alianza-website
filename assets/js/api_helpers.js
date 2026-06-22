@@ -1,3 +1,6 @@
+const AUTH_TOKEN_KEY = "auth_token_v1";
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
 export const parseApiResponse = async (response) => {
   const contentType = response.headers.get("content-type") || "";
   const isJson = contentType.includes("application/json");
@@ -33,16 +36,39 @@ export const parseApiResponse = async (response) => {
   };
 };
 
+export const getStoredAuthToken = () =>
+  window.localStorage.getItem(AUTH_TOKEN_KEY);
+
+export const setStoredAuthToken = (token) => {
+  if (!token) return;
+  window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+};
+
+export const clearStoredAuthToken = () => {
+  window.localStorage.removeItem(AUTH_TOKEN_KEY);
+};
+
 export const apiFetch = async (url, options = {}) => {
-  let res;
-  try {
-    res = await fetch(url, {
-      credentials: "include",
-      ...options
-    });
-  } catch (error) {
-    throw error;
+  const fetchOptions = { ...options };
+  const headers = new Headers(fetchOptions.headers || {});
+  const token = getStoredAuthToken();
+  const method = (fetchOptions.method || "GET").toUpperCase();
+
+  if (token && !headers.has("Authorization")) {
+    headers.set("Authorization", `Bearer ${token}`);
   }
+
+  if (MUTATING_METHODS.has(method)) {
+    if (!headers.has("X-Requested-With")) {
+      headers.set("X-Requested-With", "XMLHttpRequest");
+    }
+  }
+
+  const res = await fetch(url, {
+    credentials: "include",
+    ...fetchOptions,
+    headers
+  });
 
   return parseApiResponse(res);
 };
