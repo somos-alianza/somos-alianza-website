@@ -4,7 +4,7 @@
     "title": "1 Lyft Services",
     "subtitle": "Starting a Lyft Transportation Program",
     "short_description": "Lyft Services strategy",
-    "description": "<p>A transportation assistance strategy that helps Latino MSM access PrEP and mental health/substance use serices by providing reliable, confidential, and low-burden transportation to and from appointments.</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "description": "A transportation assistance strategy that helps Latino MSM access PrEP and mental health/substance use serices by providing reliable, confidential, and low-burden transportation to and from appointments.This page provides an overview + downloadable SOPs to help your team launch this program.",
     "sop_link": "/assets/SOPs/Test%20SOP.pdf",
     "image": "/assets/images/lyft_img.png",
     "image_alt": "man in a lyft",
@@ -21,7 +21,7 @@
       "Reduces barriers...",
       "Reduces stigma...",
       "Reduces costs...",
-      "<b>Decreases missed or late appointments</b>..."
+      "Decreases missed or late appointments..."
     ],
     "categories": ["Transportation", "Patient Engagement"]
   },
@@ -30,7 +30,7 @@
     "title": "2 Other Strategy",
     "subtitle": "Starting Another Strategy",
     "short_description": "Other Strategy short description",
-    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "description": "Blah blah blahThis page provides an overview + downloadable SOPs to help your team launch this program.",
     "sop_link": "/assets/SOPs/Test%20SOP.pdf",
     "image": "/assets/images/lyft_img.png",
     "image_alt": "man in a lyft",
@@ -47,7 +47,7 @@
       "Reduces barriers...",
       "Reduces stigma...",
       "Reduces costs...",
-      "<b>Decreases missed or late appointments</b>..."
+      "Decreases missed or late appointments..."
     ],
     "categories": ["Other stuff", "Other categories"]
   },
@@ -56,7 +56,7 @@
     "title": "3 Other Strategy",
     "subtitle": "Starting Another Strategy",
     "short_description": "Third Other Strategy short description",
-    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "description": "Blah blah blahThis page provides an overview + downloadable SOPs to help your team launch this program.",
     "sop_link": "/assets/SOPs/Test%20SOP.pdf",
     "image": "/assets/images/lyft_img.png",
     "image_alt": "man in a lyft",
@@ -73,7 +73,7 @@
       "Reduces barriers...",
       "Reduces stigma...",
       "Reduces costs...",
-      "<b>Decreases missed or late appointments</b>..."
+      "Decreases missed or late appointments..."
     ],
     "categories": ["Other stuff", "Other categories"]
   },
@@ -82,7 +82,7 @@
     "title": "4 strategy",
     "subtitle": "Starting a fourth strategy",
     "short_description": "4 strategy",
-    "description": "<p>A transportation assistance strategy that helps Latino MSM access PrEP and mental health/substance use serices by providing reliable, confidential, and low-burden transportation to and from appointments.</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "description": "A transportation assistance strategy that helps Latino MSM access PrEP and mental health/substance use serices by providing reliable, confidential, and low-burden transportation to and from appointments.This page provides an overview + downloadable SOPs to help your team launch this program.",
     "sop_link": "/assets/SOPs/Test%20SOP.pdf",
     "image": "/assets/images/lyft_img.png",
     "image_alt": "man in a lyft",
@@ -99,7 +99,7 @@
       "Reduces barriers...",
       "Reduces stigma...",
       "Reduces costs...",
-      "<b>Decreases missed or late appointments</b>..."
+      "Decreases missed or late appointments..."
     ],
     "categories": ["Transportation", "Patient Engagement"]
   },
@@ -108,7 +108,7 @@
     "title": "5 Other Strategy",
     "subtitle": "Starting Another Strategy",
     "short_description": "Other Strategy short description",
-    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "description": "Blah blah blahThis page provides an overview + downloadable SOPs to help your team launch this program.",
     "sop_link": "/assets/SOPs/Test%20SOP.pdf",
     "image": "/assets/images/lyft_img.png",
     "image_alt": "man in a lyft",
@@ -125,7 +125,7 @@
       "Reduces barriers...",
       "Reduces stigma...",
       "Reduces costs...",
-      "<b>Decreases missed or late appointments</b>..."
+      "Decreases missed or late appointments..."
     ],
     "categories": ["Other stuff", "Other categories"]
   },
@@ -134,7 +134,7 @@
     "title": "6 Other Strategy",
     "subtitle": "Starting Another Strategy",
     "short_description": "Third Other Strategy short description",
-    "description": "<p>Blah blah blah</p><p>This page provides an overview + downloadable SOPs to help your team launch this program.</p>",
+    "description": "Blah blah blahThis page provides an overview + downloadable SOPs to help your team launch this program.",
     "sop_link": "/assets/SOPs/Test%20SOP.pdf",
     "image": "/assets/images/lyft_img.png",
     "image_alt": "man in a lyft",
@@ -151,7 +151,7 @@
       "Reduces barriers...",
       "Reduces stigma...",
       "Reduces costs...",
-      "<b>Decreases missed or late appointments</b>..."
+      "Decreases missed or late appointments..."
     ],
     "categories": ["Other stuff", "Other categories"]
   }

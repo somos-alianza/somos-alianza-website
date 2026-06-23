@@ -1,4 +1,4 @@
-import { apiFetch } from "./api_helpers.js";
+import { apiFetch, clearStoredAuthToken } from "./api_helpers.js";
 
 const { baseurl, apiUrl } = document.body.dataset;
 
@@ -67,37 +67,25 @@ export const clearCachedAuth = () => {
   storage.removeItem(AUTH_CACHE_KEY);
 };
 
-// TODO: Strictly for dev/manual testing, will be removed in production.
 const clearAuthStorage = () => {
   clearCachedAuth();
-};
-
-const clearAuthCookies = () => {
-  const authCookieNames = ["user_auth_token", "superuser_auth_token"];
-  const paths = ["/"];
-  if (baseurl && baseurl !== "/") {
-    paths.push(baseurl);
-  }
-
-  authCookieNames.forEach((name) => {
-    const encodedName = encodeURIComponent(name);
-    paths.forEach((path) => {
-      document.cookie = `${encodedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; SameSite=Lax`;
-    });
-  });
+  clearStoredAuthToken();
 };
 
 const logoutClientSide = async () => {
+  const currentUser = await getAuthContext();
+
   try {
-    await apiFetch(`${apiUrl}/auth/logout`, {
-      method: "DELETE"
-    });
+    if (currentUser?.authenticated) {
+      await apiFetch(`${apiUrl}/auth/user_session`, {
+        method: "DELETE"
+      });
+    }
   } catch (_error) {}
+
   clearAuthStorage();
-  clearAuthCookies();
   window.location.reload();
 };
-// TODO end: Strictly for dev/manual testing, will be removed in production.
 
 const fetchAuthSession = async () => {
   let res;
@@ -247,14 +235,6 @@ const updateNavigation = (currentUser) => {
     setLink(usersLink, null, "none");
   }
 };
-
-export const escHtml = (str) =>
-  String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 
 document.addEventListener("DOMContentLoaded", () => {
   const logoutButton = document.getElementById("logout-button");

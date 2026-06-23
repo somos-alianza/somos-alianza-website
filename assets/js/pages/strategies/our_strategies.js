@@ -5,6 +5,7 @@ import {
   showBannerAlert,
   getEmbeddedStrategies
 } from "../../shared.js";
+import { buildStrategyCard } from "./strategy_card.js";
 
 const { baseurl, apiUrl } = document.body.dataset;
 
@@ -69,12 +70,14 @@ const renderOurStrategies = (allStrategies, favorites) => {
   if (!container) return;
 
   if (favorites.length === 0) {
-    container.innerHTML =
-      "<p>No strategies favorited by your organization yet.</p>";
+    container.replaceChildren();
+    const empty = document.createElement("p");
+    empty.textContent = "No strategies favorited by your organization yet.";
+    container.appendChild(empty);
     return;
   }
 
-  container.innerHTML = "";
+  container.replaceChildren();
 
   const strategyFavorites = {};
   favorites.forEach((f) => {
@@ -92,38 +95,7 @@ const renderOurStrategies = (allStrategies, favorites) => {
 
     const favs = strategyFavorites[sId];
     const orgFavorite = favs[0];
-    const isFavorited = !!orgFavorite;
-
-    const card = document.createElement("div");
-
-    const categoriesHtml = strategy.categories
-      ? strategy.categories.map((cat) => `<span>${cat}</span>`).join("")
-      : "";
-
-    card.innerHTML = `
-      <div>
-        <h2>${strategy.title}</h2>
-        <p>${strategy.short_description}</p>
-        <div>${categoriesHtml}</div>
-      </div>
-      <div>
-        <a href="${baseurl}/strategies/show.html?id=${strategy.id}">View Strategy</a>
-        <button 
-                data-id="${strategy.id}"
-                aria-label="${isFavorited ? "Remove from favorites" : "Add to favorites"}"
-                ${isFavorited ? `data-favorite-id="${orgFavorite.id}"` : ""}>
-          <i class="${isFavorited ? "fa-solid" : "fa-regular"} fa-bookmark"></i>
-        </button>
-      </div>
-    `;
-
-    const favoriteBtn = card.querySelector("button");
-    favoriteBtn.addEventListener("click", () => {
-      const favId = favoriteBtn.getAttribute("data-favorite-id");
-      toggleFavorite(strategy.id, favId, favoriteBtn);
-    });
-
-    container.appendChild(card);
+    container.appendChild(buildStrategyCard(strategy, orgFavorite));
   });
 };
 
