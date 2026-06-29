@@ -15,18 +15,19 @@ css:
       click the button below to view your strategies.
     </p>
 
-    <a href="{{ '/strategies/our_strategies.html' | relative_url }}">
-      <button>
-        Your Strategies
-        <img
-          class="button__icon"
-          src="{{ '/assets/icons/arrow-right.svg' | relative_url }}"
-          alt=""
-          aria-hidden="true"
-          width="34"
-          height="15"
-        />
-      </button>
+    <a
+      href="{{ '/strategies/our_strategies.html' | relative_url }}"
+      role="button"
+    >
+      Your Strategies
+      <img
+        class="button__icon"
+        src="{{ '/assets/icons/arrow-right.svg' | relative_url }}"
+        alt=""
+        aria-label="link to your organization's strategies"
+        width="34"
+        height="15"
+      />
     </a>
   </div>
   <div class="strategy-finder-filters">

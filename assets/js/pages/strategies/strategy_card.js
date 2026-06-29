@@ -73,10 +73,9 @@ export const buildStrategyCard = (strategy, orgFavorite) => {
   const right = document.createElement("div");
   const viewLinkWrapper = document.createElement("a");
   viewLinkWrapper.href = `${baseurl}/strategies/show.html?id=${strategy.id}`;
-  const viewStrategyBtn = document.createElement("button");
-  viewStrategyBtn.classList.add("outline");
-  viewStrategyBtn.textContent = "View Strategy";
-  viewLinkWrapper.appendChild(viewStrategyBtn);
+  viewLinkWrapper.setAttribute("role", "button");
+  viewLinkWrapper.classList.add("outline");
+  viewLinkWrapper.textContent = "View Strategy";
 
   const favoriteBtn = document.createElement("button");
   favoriteBtn.classList.add("favorite-btn");
