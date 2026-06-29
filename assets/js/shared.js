@@ -32,9 +32,29 @@ const isPublicPage = () => {
   return PUBLIC_PATHS.has(normalizedPath);
 };
 
+const normalizePath = (path) => {
+  const withoutBase = path.startsWith(baseurl)
+    ? path.slice(baseurl.length)
+    : path;
+  if (!withoutBase || withoutBase === "/") return "/";
+  return withoutBase.endsWith("/") ? withoutBase.slice(0, -1) : withoutBase;
+};
+
+const updateActiveNavLink = () => {
+  const currentPath = normalizePath(window.location.pathname);
+  const currentIsHome = currentPath === "/" || currentPath === "/index.html";
+
+  document.querySelectorAll("header nav a[href]").forEach((link) => {
+    const linkPath = normalizePath(new URL(link.href).pathname);
+    const linkIsHome = linkPath === "/" || linkPath === "/index.html";
+    const isActive = currentIsHome ? linkIsHome : linkPath === currentPath;
+
+    link.classList.toggle("active", isActive);
+  });
+};
+
 const redirectToLogin = () => {
   if (isPublicPage()) return;
-  console.log(isPublicPage());
   window.location.href = `${baseurl}/login.html`;
 };
 
@@ -177,15 +197,7 @@ export const getEmbeddedStrategies = ({
   }
 };
 
-export const updateVisibility = async () => {
-  const currentUser = await getAuthContext();
-  if (!currentUser && !isPublicPage()) {
-    redirectToLogin();
-    return;
-  }
-  const authenticated = Boolean(currentUser?.authenticated);
-  const role = authenticated ? currentUser.role : null;
-
+const applyRoleVisibility = ({ authenticated, role }) => {
   const visibilityRules = [
     [".authorized-only", authenticated],
     [".champion-only", hasRole(role, "champion")],
@@ -197,8 +209,25 @@ export const updateVisibility = async () => {
       el.style.display = allowed ? "initial" : "none";
     });
   });
+};
 
+export const updateVisibility = async () => {
+  let currentUser = null;
+  try {
+    currentUser = await getAuthContext({ forceRefresh: true });
+  } catch (_error) {
+    currentUser = null;
+  }
+
+  const authenticated = Boolean(currentUser?.authenticated);
+  const role = authenticated ? currentUser.role : null;
+
+  applyRoleVisibility({ authenticated, role });
   updateNavigation(currentUser);
+
+  if (!authenticated && !isPublicPage()) {
+    redirectToLogin();
+  }
 };
 
 const updateNavigation = (currentUser) => {
@@ -220,6 +249,7 @@ const updateNavigation = (currentUser) => {
 
   if (!currentUser?.authenticated) {
     setLink(usersLink, `${baseurl}/login.html`);
+    updateActiveNavLink();
     return;
   }
 
@@ -236,15 +266,9 @@ const updateNavigation = (currentUser) => {
   } else {
     setLink(usersLink, null, "none");
   }
-};
 
-export const escHtml = (str) =>
-  String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  updateActiveNavLink();
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   const logoutButton = document.getElementById("logout-button");

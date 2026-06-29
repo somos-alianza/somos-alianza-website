@@ -1,4 +1,4 @@
-import { apiFetch, handleApiResult } from "../../api_helpers.js";
+import { apiFetch } from "../../api_helpers.js";
 import {
   requireAuthenticated,
   getAuthContext,
@@ -7,7 +7,7 @@ import {
 } from "../../shared.js";
 import { buildStrategyCard } from "./strategy_card.js";
 
-const { baseurl, apiUrl } = document.body.dataset;
+const { apiUrl } = document.body.dataset;
 
 const fetchStrategies = async () => {
   return getEmbeddedStrategies({ onError: showBannerAlert });
@@ -26,42 +26,6 @@ const fetchFavorites = async () => {
   } catch (_error) {
     showBannerAlert("Failed to fetch favorites.");
     return [];
-  }
-};
-
-const toggleFavorite = async (strategyId, favoriteId, button) => {
-  try {
-    const isFavorited = button.hasAttribute("data-favorite-id");
-    const icon = button.querySelector("i");
-
-    if (isFavorited) {
-      const res = await apiFetch(`${apiUrl}/favorites/${favoriteId}`, {
-        method: "DELETE"
-      });
-
-      if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
-        button.removeAttribute("data-favorite-id");
-        icon.className = "fa-regular fa-bookmark";
-        showBannerAlert(res.message || "Strategy removed from favorites.");
-      }
-    } else {
-      const res = await apiFetch(
-        `${apiUrl}/strategies/${strategyId}/favorites`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-
-      if (handleApiResult(res, { baseurl, onError: showBannerAlert })) {
-        const newFavoriteId = res.item?.id || res.body?.item?.id;
-        button.setAttribute("data-favorite-id", newFavoriteId);
-        icon.className = "fa-solid fa-bookmark";
-        showBannerAlert(res.message || "Strategy added to favorites.");
-      }
-    }
-  } catch (_error) {
-    showBannerAlert("An error occurred, please try again.");
   }
 };
 

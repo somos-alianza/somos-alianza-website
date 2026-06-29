@@ -124,39 +124,3 @@
     line-height: 1.65;
   }
 </style>
-
-<script>
-  (function () {
-    var items = Array.from(document.querySelectorAll(".accordion__item"));
-
-    function open(item) {
-      item.classList.add("accordion__item--open");
-      item
-        .querySelector(".accordion__trigger")
-        .setAttribute("aria-expanded", "true");
-    }
-
-    function close(item) {
-      item.classList.remove("accordion__item--open");
-      item
-        .querySelector(".accordion__trigger")
-        .setAttribute("aria-expanded", "false");
-    }
-
-    items.forEach(function (item) {
-      item
-        .querySelector(".accordion__trigger")
-        .addEventListener("click", function () {
-          var isOpen = item.classList.contains("accordion__item--open");
-
-          // Close all others
-          items.forEach(function (other) {
-            if (other !== item) close(other);
-          });
-
-          // Toggle clicked item
-          isOpen ? close(item) : open(item);
-        });
-    });
-  })();
-</script>

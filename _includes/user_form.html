@@ -1,10 +1,22 @@
 <form id="user-form" class="champion-only">
   <input type="hidden" id="user-id" name="id" value="{{ include.user_id }}" />
-  <label for="email">Email</label>
+
+  <input
+    type="text"
+    id="name"
+    name="name"
+    placeholder="Name"
+    aria-label="Name"
+    required
+    value="{{ include.name }}"
+  />
+
   <input
     type="email"
     id="email"
     name="email"
+    placeholder="Email"
+    aria-label="Email"
     required
     value="{{ include.email }}"
   />
@@ -22,7 +34,15 @@
       %}
     />
   </div>
-  <button type="submit">Save User</button>
+  <div class="form-buttons">
+    <button type="submit" id="user-modal-submit">
+      Add New User
+      <img src="{{ '/assets/icons/user-plus.svg' | relative_url }}" />
+    </button>
+    <button id="user-modal-cancel" type="button" class="outline secondary">
+      Cancel
+    </button>
+  </div>
 </form>
 
 <div id="message"></div>

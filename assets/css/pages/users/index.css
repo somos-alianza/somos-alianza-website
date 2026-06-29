@@ -1,0 +1,7 @@
+.form-buttons {
+  display: flex;
+
+  #user-modal-submit {
+    margin-right: 8px;
+  }
+}

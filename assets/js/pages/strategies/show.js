@@ -64,14 +64,22 @@ const appendParagraph = (parent, text) => {
 };
 
 const createNoteCard = (note) => {
-  const noteEl = document.createElement("div");
+  const noteEl = document.createElement("article");
+  noteEl.classList.add("note-card");
   noteEl.dataset.noteId = String(note.id);
 
+  const noteHeader = document.createElement("header");
+
+  const note_user = document.createElement("p");
+  note_user.textContent = `Note by ${note.username || "Unknown"}`;
   const body = document.createElement("p");
   body.textContent = note.body || "";
+  noteHeader.appendChild(note_user);
+  noteEl.appendChild(noteHeader);
   noteEl.appendChild(body);
 
   if (isMyNote(note)) {
+    const noteFooter = document.createElement("footer");
     const editBtn = document.createElement("button");
     editBtn.type = "button";
     editBtn.dataset.action = "edit-note";
@@ -82,8 +90,9 @@ const createNoteCard = (note) => {
     deleteBtn.dataset.action = "delete-note";
     deleteBtn.textContent = "Delete";
 
-    noteEl.appendChild(editBtn);
-    noteEl.appendChild(deleteBtn);
+    noteFooter.appendChild(editBtn);
+    noteFooter.appendChild(deleteBtn);
+    noteEl.appendChild(noteFooter);
   }
 
   return noteEl;
