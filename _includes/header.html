@@ -1,37 +1,77 @@
 <header>
   <nav>
-    <a href="{{ '/' | relative_url }}">Home</a>
-    <a href="{{ '/about.html' | relative_url }}">About</a>
-    <a
-      id="strategy-finder-link"
-      href="{{ '/strategies/strategy_finder.html' | relative_url }}"
-      class="authorized-only"
-      >Strategy Finder</a
-    >
-    <a
-      id="our-strategies-link"
-      href="{{ '/strategies/our_strategies.html' | relative_url }}"
-      class="authorized-only"
-      >Our Strategies</a
-    >
-    <a href="{{ '/contact_us.html' | relative_url }}">Contact Us</a>
-    <a
-      id="users-link"
-      aria-label="Manage users"
-      href="{{ '/login.html' | relative_url }}"
-      style="display: none"
-    >
-      <i class="fa-regular fa-user"></i>
-    </a>
-    <a
-      href="{{ '/organizations/index.html' | relative_url }}"
-      class="superuser-only"
-      >Organizations</a
-    >
-    <!--  TODO: Only for dev/test purposes. Remove in production.  -->
-    <button id="logout-button" type="button" class="authorized-only">
-      Logout
-    </button>
+    <ul>
+      <li>
+        <img
+          src="{{ '/assets/images/logo.png' | relative_url }}"
+          alt="logo"
+          id="nav-logo"
+        />
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <a href="{{ '/' | relative_url }}">Home</a>
+      </li>
+      <li>
+        <a href="{{ '/components.html' | relative_url }}">Components</a>
+      </li>
+      <li>
+        <a href="{{ '/about.html' | relative_url }}">About</a>
+      </li>
+      <li class="authorized-only">
+        <a
+          id="strategy-finder-link"
+          href="{{ '/strategies/strategy_finder.html' | relative_url }}"
+          >Strategy Finder</a
+        >
+      </li>
+      <li class="authorized-only">
+        <a
+          id="our-strategies-link"
+          href="{{ '/strategies/our_strategies.html' | relative_url }}"
+          >Our Strategies</a
+        >
+      </li>
+      <li>
+        <a href="{{ '/contact_us.html' | relative_url }}">Contact Us</a>
+      </li>
+      <li>
+        <a
+          id="users-link"
+          aria-label="Manage users"
+          href="{{ '/login.html' | relative_url }}"
+        >
+          <img
+            class="user-icon user-icon--default"
+            src="{{ '/assets/icons/user.svg' | relative_url }}"
+            alt=""
+            aria-hidden="true"
+            width="31"
+            height="31"
+          />
+          <img
+            class="user-icon user-icon--active"
+            src="{{ '/assets/icons/user-active.svg' | relative_url }}"
+            alt=""
+            aria-hidden="true"
+            width="31"
+            height="31"
+          />
+        </a>
+      </li>
+      <li class="superuser-only">
+        <a href="{{ '/organizations/index.html' | relative_url }}"
+          >Organizations</a
+        >
+      </li>
+      <li>
+        <!--  TODO: Only for dev/test purposes. Remove in production.  -->
+        <button id="logout-button" type="button" class="authorized-only">
+          X
+        </button>
+      </li>
+    </ul>
   </nav>
 </header>
 

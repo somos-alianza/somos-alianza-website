@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     {% include head.html %}
   </head>
 
   <body data-api-url="{{ site.api_url }}" data-baseurl="{{ site.baseurl }}">
     {% include header.html %} {% include banner_alert.html %}
-    <main>{{ content }}</main>
+    <main class="container">{{ content }}</main>
   </body>
 </html>

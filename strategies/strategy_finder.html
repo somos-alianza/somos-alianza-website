@@ -1,14 +1,73 @@
 ---
 layout: default
 title: Strategy Finder
+css:
+  - /assets/css/pages/strategies/strategy_finder.css
 ---
 
 <div>
-  <h1>Strategy Finder</h1>
-  <p>Explore our strategies and find the best fit for your needs.</p>
+  <div class="top-section">
+    <h1>Find Strategies that Become Solutions</h1>
+    <p>
+      Welcome to the Strategy Finder, here you can browse evidence-based
+      strategies, save the strategies you want to implement and track your
+      progress. If you’ve already identified, saved or implemented strategies,
+      click the button below to view your strategies.
+    </p>
 
-  <div id="strategies-container">
-    <p>Loading strategies...</p>
+    <a
+      href="{{ '/strategies/our_strategies.html' | relative_url }}"
+      role="button"
+    >
+      Your Strategies
+      <img
+        class="button__icon"
+        src="{{ '/assets/icons/arrow-right.svg' | relative_url }}"
+        alt=""
+        aria-label="link to your organization's strategies"
+        width="34"
+        height="15"
+      />
+    </a>
+  </div>
+  <div class="strategy-finder-filters">
+    <h2>Strategy Finder: Identify Solutions for Your Team</h2>
+    <p>
+      <b>Pick from the filters below</b> to find strategy options to save,
+      implement and track progress.
+    </p>
+    <p>
+      Once selected, relevant strategies will appear under "Suggested
+      Strategies" below.
+    </p>
+
+    <div class="filters-container">
+      <button class="secondary outline">
+        <img
+          src="{{ '/assets/icons/outreach.svg' | relative_url }}"
+          alt=""
+          aria-hidden="true"
+          width="20"
+          height="20"
+        />
+        Access & Barrier Reduction
+      </button>
+      <button class="secondary outline">
+        <img
+          src="{{ '/assets/icons/communication.svg' | relative_url }}"
+          alt=""
+          aria-hidden="true"
+          width="20"
+          height="20"
+        />
+        Access & Barrier Reduction
+      </button>
+    </div>
+  </div>
+  <div class="strategies-container">
+    <div id="strategies-container">
+      <p>Loading strategies...</p>
+    </div>
   </div>
 </div>
 

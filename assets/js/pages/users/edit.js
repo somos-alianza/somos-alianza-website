@@ -7,6 +7,7 @@ const params = new URLSearchParams(window.location.search);
 const orgId = params.get("organization_id");
 const userId = params.get("id");
 const messageEl = document.getElementById("message");
+const nameInput = document.getElementById("name");
 const emailInput = document.getElementById("email");
 const championCheckbox = document.getElementById("champion");
 let canManageChampionStatus = false;
@@ -32,6 +33,7 @@ const loadUserDetails = async () => {
 
     const user = res.item;
     if (user?.email) {
+      nameInput.value = user.name || "";
       emailInput.value = user.email;
       if (canManageChampionStatus && user.champion !== undefined) {
         championCheckbox.checked = user.champion;
@@ -52,7 +54,7 @@ const attachUpdateListener = () => {
 
 const submitUpdate = async (e) => {
   e.preventDefault();
-  const userPayload = { email: emailInput.value };
+  const userPayload = { name: nameInput.value, email: emailInput.value };
   if (canManageChampionStatus) userPayload.champion = championCheckbox.checked;
 
   try {

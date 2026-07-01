@@ -13,8 +13,9 @@ let canManageChampionStatus = false;
 
 const submitCreate = async (e) => {
   e.preventDefault();
+  const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
-  const userPayload = { email };
+  const userPayload = { name, email };
 
   if (canManageChampionStatus && championInput) {
     userPayload.champion = championInput.checked;
